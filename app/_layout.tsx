@@ -2,31 +2,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { Drawer } from "expo-router/drawer";
 
-import { View, Text, StyleSheet, Image } from "react-native";
-
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
+import CustomDrawerContent from "@/components/custom-drawer-content";
 
 import { Ionicons } from "@expo/vector-icons";
 
-function CustomDrawerContent(props: any) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <View style={styles.profileContainer}>
-        <Image
-          source={require("../assets/images/avatar.png")}
-          style={styles.profileImage}
-        />
-        <Text style={styles.profileName}>Suman Pajji</Text>
-        <Text style={styles.profileEmail}>App Developer</Text>
-      </View>
-      <View style={styles.separator} />
-      <DrawerItemList {...props} />
-    </DrawerContentScrollView>
-  );
-}
+import { themeColors } from "@/utils/colors";
 
 export default function Layout() {
   return (
@@ -34,13 +14,21 @@ export default function Layout() {
       <Drawer
         drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
+          drawerType: "front",
           drawerStyle: {
-            width: 230,
+            width: 250,
+            backgroundColor: themeColors.sidebarBackground,
           },
-          drawerActiveTintColor: "blue",
-          drawerInactiveTintColor: "gray",
-          drawerActiveBackgroundColor: "#e6f2ff",
-          drawerInactiveBackgroundColor: "transparent",
+          drawerActiveTintColor: "white",
+          drawerInactiveTintColor: "black",
+          drawerActiveBackgroundColor: themeColors.primary,
+          drawerInactiveBackgroundColor: "white",
+          drawerItemStyle: {
+            height: 50,
+            marginVertical: 2,
+            borderRadius: 5,
+            justifyContent: "center",
+          },
         }}
       >
         <Drawer.Screen
@@ -86,6 +74,7 @@ export default function Layout() {
         <Drawer.Screen
           name="daily-report"
           options={{
+            title: "Daily Report",
             drawerLabel: "Hidden",
             drawerItemStyle: { display: "none" },
           }}
@@ -93,6 +82,7 @@ export default function Layout() {
         <Drawer.Screen
           name="fprequirement"
           options={{
+            title: "FP Requirement",
             drawerLabel: "Hidden",
             drawerItemStyle: { display: "none" },
           }}
@@ -100,6 +90,7 @@ export default function Layout() {
         <Drawer.Screen
           name="policy-holder"
           options={{
+            title: "Policy Holder",
             drawerLabel: "Hidden",
             drawerItemStyle: { display: "none" },
           }}
@@ -108,32 +99,3 @@ export default function Layout() {
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  profileContainer: {
-    padding: 16,
-    alignItems: "center",
-  },
-  profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
-    borderWidth: 1,
-  },
-  profileName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  profileEmail: {
-    fontSize: 14,
-    color: "#666",
-  },
-  separator: {
-    height: 1,
-    backgroundColor: "#e0e0e0",
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-});

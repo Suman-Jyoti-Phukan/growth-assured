@@ -24,7 +24,12 @@ const FPRequirementScreen = () => {
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: background, paddingHorizontal: 8 }}
+      style={{
+        flex: 1,
+        backgroundColor: background,
+        paddingHorizontal: 8,
+        paddingVertical: 15,
+      }}
     >
       <StatusBar
         animated={true}

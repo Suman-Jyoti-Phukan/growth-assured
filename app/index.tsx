@@ -1,20 +1,15 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  StatusBar,
   FlatList,
   StyleSheet,
   Alert,
   BackHandler,
 } from "react-native";
-
-import Icon3 from "react-native-vector-icons/FontAwesome";
-
-import Ionicons from "react-native-vector-icons/Ionicons";
 
 import { themeColors } from "../utils/colors";
 
@@ -24,7 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 
 const clients = [
   {
@@ -53,8 +48,10 @@ const clients = [
   },
 ];
 
-const Home = () => {
+export default function Dashboard() {
   const { primary, background } = themeColors;
+
+  const router = useRouter();
 
   const renderClient = ({
     item,
@@ -99,9 +96,12 @@ const Home = () => {
     }, [])
   );
 
+  const arr = [1, 2, 3, 3, 4];
+
+  const map = {};
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
-      {/* Profile Section */}
       <View
         style={{
           flexDirection: "row",
@@ -141,16 +141,16 @@ const Home = () => {
               color: "#000",
             }}
           >
-            Regional Manager
+            Ser Criston Cole
           </Text>
           <Text style={{ fontSize: responsiveFontSize(1.8), color: "gray" }}>
-            Paaji
+            Knight
           </Text>
         </View>
       </View>
 
       <TouchableOpacity
-        // onPress={() => navigation.push("PolicyHolderScreen")}
+        onPress={() => router.push("/policy-holder")}
         style={{
           backgroundColor: primary,
           paddingVertical: 12,
@@ -173,7 +173,7 @@ const Home = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        // onPress={() => navigation.navigate("FPRequirementScreen")}
+        onPress={() => router.push("/fprequirement")}
         style={{
           backgroundColor: primary,
           paddingVertical: 12,
@@ -196,7 +196,7 @@ const Home = () => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        // onPress={() => navigation.navigate("DailyReportScreen")}
+        onPress={() => router.push("/daily-report")}
         style={{
           backgroundColor: primary,
           paddingVertical: 12,
@@ -219,7 +219,6 @@ const Home = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Clients List */}
       <FlatList
         data={clients}
         keyExtractor={(item) => item.id}
@@ -228,9 +227,7 @@ const Home = () => {
       />
     </SafeAreaView>
   );
-};
-
-export default Home;
+}
 
 const styles = StyleSheet.create({
   listContainer: {
