@@ -8,6 +8,8 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 import { themeColors } from "@/utils/colors";
 
+import { useRouter } from "expo-router";
+
 const hierarchy: Record<string, string[]> = {
   "Area Sales Manager": ["John Doe", "Jane Smith", "Alice Johnson"],
   "Branch Manager": ["Robert Brown", "Emily Davis", "Michael Wilson"],
@@ -16,6 +18,8 @@ const hierarchy: Record<string, string[]> = {
 };
 
 export default function RoleHierarchy(): JSX.Element {
+  const router = useRouter();
+
   const { primary, secondary } = themeColors;
 
   const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
@@ -103,7 +107,9 @@ export default function RoleHierarchy(): JSX.Element {
                 hierarchy[role].map((name) => (
                   <TouchableOpacity
                     key={name}
-                    onPress={() => console.log("Okay Dokie")}
+                    onPress={() =>
+                      router.push(`/employee-details/${name}` as any)
+                    }
                   >
                     <Text
                       style={{

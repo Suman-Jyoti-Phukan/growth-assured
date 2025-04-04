@@ -2,13 +2,19 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { Drawer } from "expo-router/drawer";
 
-import CustomDrawerContent from "@/components/custom-drawer-content";
-
 import { Ionicons } from "@expo/vector-icons";
 
 import { themeColors } from "@/utils/colors";
 
+import CustomDrawerContent from "@/components/custom-drawer-content";
+
+import { TouchableOpacity } from "react-native";
+
+import { useRouter } from "expo-router";
+
 export default function Layout() {
+  const router = useRouter();
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
@@ -29,6 +35,14 @@ export default function Layout() {
             borderRadius: 5,
             justifyContent: "center",
           },
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => router.push("/profile")}
+              style={{ marginRight: 15 }}
+            >
+              <Ionicons name="person-circle" size={40} color="black" />
+            </TouchableOpacity>
+          ),
         }}
       >
         <Drawer.Screen
@@ -87,6 +101,17 @@ export default function Layout() {
             drawerItemStyle: { display: "none" },
           }}
         />
+
+        <Drawer.Screen
+          name="employee-details"
+          options={{
+            title: "Employee Details",
+
+            drawerLabel: "Hidden",
+            drawerItemStyle: { display: "none" },
+          }}
+        />
+
         <Drawer.Screen
           name="policy-holder"
           options={{
