@@ -96,10 +96,6 @@ export default function Dashboard() {
     }, [])
   );
 
-  const arr = [1, 2, 3, 3, 4];
-
-  const map = {};
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
       <View
@@ -218,6 +214,88 @@ export default function Dashboard() {
           Daily Report
         </Text>
       </TouchableOpacity>
+
+      <View style={{ marginTop: 10 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            marginBottom: 20,
+          }}
+        >
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f0f4ff",
+              padding: 20,
+              borderRadius: 12,
+              width: "45%",
+              elevation: 3,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: responsiveFontSize(3),
+                fontWeight: "bold",
+                color: "#0051BA",
+              }}
+            >
+              120
+            </Text>
+            <Text
+              style={{
+                fontSize: responsiveFontSize(2),
+                fontWeight: "500",
+                color: "#333",
+                marginTop: 5,
+              }}
+            >
+              Online
+            </Text>
+          </View>
+
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f0f4ff",
+              padding: 20,
+              borderRadius: 12,
+              width: "45%",
+              elevation: 3,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: responsiveFontSize(3),
+                fontWeight: "bold",
+                color: "#0051BA",
+              }}
+            >
+              85
+            </Text>
+            <Text
+              style={{
+                fontSize: responsiveFontSize(2),
+                fontWeight: "500",
+                color: "#333",
+                marginTop: 5,
+              }}
+            >
+              Issued
+            </Text>
+          </View>
+        </View>
+      </View>
 
       <FlatList
         data={clients}

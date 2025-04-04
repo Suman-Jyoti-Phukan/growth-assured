@@ -68,9 +68,9 @@ export default function RoleHierarchy(): JSX.Element {
       </TouchableOpacity>
 
       {dropdownVisible && (
-        <View style={{ marginLeft: 30, marginTop: 8 }}>
+        <View style={{ marginLeft: 20, marginTop: 8 }}>
           {Object.keys(hierarchy).map((role) => (
-            <View key={role} style={{ marginBottom: 12, paddingHorizontal: 8 }}>
+            <View key={role} style={{ marginBottom: 12, paddingHorizontal: 4 }}>
               <TouchableOpacity
                 onPress={() => toggleDesignationDropdown(role)}
                 style={{
@@ -78,8 +78,8 @@ export default function RoleHierarchy(): JSX.Element {
                   alignItems: "center",
                   justifyContent: "space-between",
                   backgroundColor: secondary,
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
+                  paddingHorizontal: 8,
+                  paddingVertical: 8,
                   borderRadius: 8,
                 }}
               >
@@ -113,11 +113,16 @@ export default function RoleHierarchy(): JSX.Element {
                   >
                     <Text
                       style={{
-                        marginLeft: 15,
+                        marginLeft: 10,
                         fontSize: responsiveFontSize(1.8),
-                        color: "#000",
+                        color: "rgba(0, 0, 0, 0.7)",
                         fontWeight: "600",
                         marginVertical: 5,
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        padding: 4,
+                        borderColor: "rgba(0, 0, 0, 0.2)",
+                        paddingLeft: 10,
                       }}
                     >
                       {name}
