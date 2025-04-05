@@ -215,7 +215,7 @@ export default function Dashboard() {
         </Text>
       </TouchableOpacity>
 
-      <View style={{ marginTop: 10 }}>
+      <View>
         <View
           style={{
             flexDirection: "row",

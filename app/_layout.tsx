@@ -120,6 +120,14 @@ export default function Layout() {
             drawerItemStyle: { display: "none" },
           }}
         />
+
+        <Drawer.Screen
+          name="login"
+          options={{
+            title: "Login",
+            drawerLabel: "Login Test",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
