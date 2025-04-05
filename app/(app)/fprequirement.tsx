@@ -11,7 +11,7 @@ import {
 
 import Icon from "react-native-vector-icons/Ionicons";
 
-import { themeColors } from "../utils/colors";
+import { themeColors } from "@/utils/colors";
 
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 

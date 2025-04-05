@@ -10,7 +10,7 @@ import {
 
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 
-import { themeColors } from "../utils/colors";
+import { themeColors } from "@/utils/colors";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 

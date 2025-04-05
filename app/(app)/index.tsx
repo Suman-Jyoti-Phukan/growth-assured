@@ -11,7 +11,7 @@ import {
   BackHandler,
 } from "react-native";
 
-import { themeColors } from "../utils/colors";
+import { themeColors } from "../../utils/colors";
 
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 
@@ -119,7 +119,7 @@ export default function Dashboard() {
           }}
         >
           <Image
-            source={require("../assets/images/avatar.png")}
+            source={require("../../assets/images/avatar.png")}
             style={{
               width: "100%",
               height: "100%",

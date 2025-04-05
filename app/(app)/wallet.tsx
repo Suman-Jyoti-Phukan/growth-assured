@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, FlatList } from "react-native";
 
-import { themeColors } from "../utils/colors";
+import { themeColors } from "@/utils/colors";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
