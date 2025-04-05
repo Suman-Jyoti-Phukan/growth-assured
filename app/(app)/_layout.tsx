@@ -16,12 +16,15 @@ import { useRouter } from "expo-router";
 
 import { useAuth } from "@/context/AuthContext";
 
+import SkeletonLoader from "@/components/skeleton-loader";
+
 export default function AppLayout() {
   const { isAuthenticated, isLoading } = useAuth();
+
   const router = useRouter();
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <SkeletonLoader />;
   }
 
   if (!isAuthenticated) {
@@ -128,6 +131,13 @@ export default function AppLayout() {
             title: "Policy Holder",
             drawerLabel: "Hidden",
             drawerItemStyle: { display: "none" },
+          }}
+        />
+        <Drawer.Screen
+          name="test-layout"
+          options={{
+            title: "Test",
+            drawerLabel: "Test",
           }}
         />
       </Drawer>
