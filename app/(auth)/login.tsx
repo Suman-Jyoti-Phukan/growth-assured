@@ -9,6 +9,8 @@ import {
   Image,
 } from "react-native";
 
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import { useRouter } from "expo-router";
 
 import { useAuth } from "@/context/AuthContext";
@@ -17,6 +19,8 @@ export default function Login() {
   const [username, setUsername] = useState("");
 
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [error, setError] = useState("");
 
@@ -43,23 +47,39 @@ export default function Login() {
         source={require("../../assets/images/logo.png")}
         style={{ width: 200, height: 200, marginBottom: 20 }}
       />
+
       <TextInput
         style={styles.input}
         placeholder="Username"
         value={username}
         onChangeText={setUsername}
+        autoCapitalize="none"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+          autoCapitalize="none"
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={22}
+            color="#666"
+          />
+        </TouchableOpacity>
+      </View>
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
+
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
@@ -75,11 +95,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 40,
-  },
   input: {
     width: "100%",
     padding: 15,
@@ -87,6 +102,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fff",
     elevation: 3,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 3,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 15,
   },
   button: {
     backgroundColor: "#007AFF",
