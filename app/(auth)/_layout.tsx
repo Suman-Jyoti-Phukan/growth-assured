@@ -17,5 +17,12 @@ export default function AuthLayout() {
     return <Redirect href="/(app)" />;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack
+      screenOptions={{ headerShown: false, animation: "fade_from_bottom" }}
+    >
+      <Stack.Screen name="login" options={{}} />
+      <Stack.Screen name="register" options={{}} />
+    </Stack>
+  );
 }

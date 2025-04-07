@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 
 import { useRouter } from "expo-router";
@@ -32,9 +33,16 @@ export default function Login() {
     }
   };
 
+  const handleRegister = () => {
+    router.push("/register");
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Image
+        source={require("../../assets/images/logo.png")}
+        style={{ width: 200, height: 200, marginBottom: 20 }}
+      />
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -51,6 +59,9 @@ export default function Login() {
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+        <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
     </View>
   );
@@ -83,8 +94,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     alignItems: "center",
+    marginBottom: 10,
   },
   buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  registerButton: {
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  registerButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",

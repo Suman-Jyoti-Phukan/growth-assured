@@ -10,7 +10,7 @@ import { themeColors } from "@/utils/colors";
 
 import CustomDrawerContent from "@/components/custom-drawer-content";
 
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 import { useRouter } from "expo-router";
 
