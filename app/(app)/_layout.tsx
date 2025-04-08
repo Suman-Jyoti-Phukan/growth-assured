@@ -102,6 +102,16 @@ export default function AppLayout() {
           }}
         />
         <Drawer.Screen
+          name="appointment"
+          options={{
+            drawerLabel: "Appointment",
+            title: "Appointment",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="mail-open-outline" color={color} size={size} />
+            ),
+          }}
+        />
+        <Drawer.Screen
           name="daily-report"
           options={{
             title: "Daily Report",
