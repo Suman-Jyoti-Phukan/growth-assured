@@ -245,7 +245,7 @@ export default function Dashboard() {
                 color: "#0051BA",
               }}
             >
-              120
+              ₹ 120000
             </Text>
             <Text
               style={{
@@ -255,7 +255,7 @@ export default function Dashboard() {
                 marginTop: 5,
               }}
             >
-              Online
+              Login
             </Text>
           </View>
 
@@ -281,7 +281,7 @@ export default function Dashboard() {
                 color: "#0051BA",
               }}
             >
-              85
+              ₹ 880000
             </Text>
             <Text
               style={{
