@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { Drawer } from "expo-router/drawer";
 
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
 
 import { themeColors } from "@/utils/colors";
 
@@ -82,6 +82,16 @@ export default function AppLayout() {
           }}
         />
         <Drawer.Screen
+          name="heirarchy"
+          options={{
+            drawerLabel: "Heirarchy",
+            title: "Area Sales Managers",
+            drawerIcon: ({ color, size }) => (
+              <AntDesign name="addusergroup" color={color} size={size} />
+            ),
+          }}
+        />
+        <Drawer.Screen
           name="wallet"
           options={{
             drawerLabel: "Wallet",
@@ -114,40 +124,43 @@ export default function AppLayout() {
         <Drawer.Screen
           name="daily-report"
           options={{
-            title: "Daily Report",
             drawerLabel: "Hidden",
+            title: "Daily Report",
             drawerItemStyle: { display: "none" },
           }}
         />
         <Drawer.Screen
           name="fprequirement"
           options={{
-            title: "FP Requirement",
             drawerLabel: "Hidden",
+            title: "FP Requirement",
             drawerItemStyle: { display: "none" },
           }}
         />
         <Drawer.Screen
           name="employee-details"
           options={{
-            title: "Employee Details",
             drawerLabel: "Hidden",
+            title: "Employee Details",
             drawerItemStyle: { display: "none" },
           }}
         />
         <Drawer.Screen
           name="policy-holder"
           options={{
-            title: "Policy Holder",
             drawerLabel: "Hidden",
+            title: "Policy Holder",
             drawerItemStyle: { display: "none" },
           }}
         />
         <Drawer.Screen
-          name="test-layout"
+          name="regional-manager"
           options={{
-            title: "Test",
-            drawerLabel: "Test",
+            drawerLabel: "Regional Manager",
+            title: "Regional Manager",
+            drawerIcon: ({ color, size }) => (
+              <AntDesign name="addusergroup" color={color} size={size} />
+            ),
           }}
         />
       </Drawer>

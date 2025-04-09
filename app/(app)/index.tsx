@@ -110,8 +110,8 @@ export default function Dashboard() {
         <View
           style={{
             elevation: 1,
-            width: 80,
-            height: 80,
+            width: 90,
+            height: 90,
             borderColor: primary,
             borderWidth: 1,
             borderRadius: 100,
@@ -119,7 +119,7 @@ export default function Dashboard() {
           }}
         >
           <Image
-            source={require("../../assets/images/avatar.png")}
+            source={require("../../assets/images/new-avatar.jpg")}
             style={{
               width: "100%",
               height: "100%",

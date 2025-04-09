@@ -19,7 +19,7 @@ export default function CustomDrawerContent(props: any) {
         <Text style={styles.profileEmail}>Knight</Text>
       </View>
       <View style={styles.separator} />
-      <RoleHeirarchy />
+      {/* <RoleHeirarchy /> */}
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );
