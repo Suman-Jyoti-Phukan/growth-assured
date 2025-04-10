@@ -22,12 +22,11 @@ export default function _layout() {
         options={{
           title: "Login Report",
           animation: "fade",
-          headerShown: false,
         }}
       />
       <Stack.Screen
         name="dsr-report"
-        options={{ title: "DSR Report", animation: "fade", headerShown: false }}
+        options={{ title: "Daily Sales Report", animation: "fade" }}
       />
       <Stack.Screen
         name="[employee-details]"

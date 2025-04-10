@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -6,91 +7,103 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
+
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 import { themeColors } from "../../utils/colors";
 
-// Fake data for DSR report (interested customers)
+interface DsrData {
+  id: string;
+  clientName: string;
+  date: string;
+  time: string;
+  interestType: string;
+  estimatedValue: number;
+  status: string;
+  contactInfo: string;
+  notes: string;
+}
+
 const FAKE_DSR_DATA = [
   {
     id: "1",
-    clientName: "Robert Chen",
+    clientName: "Ramesh Gupta",
     date: "2025-04-09",
     time: "10:15 AM",
     interestType: "Auto Insurance",
-    estimatedValue: 1500,
+    estimatedValue: 1_500,
     status: "Hot Lead",
-    contactInfo: "+1 (555) 123-4567",
+    contactInfo: "+91 98765 43210",
     notes: "Looking for comprehensive coverage for 2 vehicles",
   },
   {
     id: "2",
-    clientName: "Amanda Torres",
+    clientName: "Priya Sharma",
     date: "2025-04-09",
     time: "01:30 PM",
     interestType: "Home Insurance",
-    estimatedValue: 1200,
+    estimatedValue: 1_200,
     status: "Warm Lead",
-    contactInfo: "+1 (555) 987-6543",
+    contactInfo: "+91 87654 32109",
     notes: "Requested quote for new home purchase",
   },
   {
     id: "3",
-    clientName: "Raj Patel",
+    clientName: "Rajesh Patel",
     date: "2025-04-08",
     time: "11:45 AM",
     interestType: "Business Insurance",
-    estimatedValue: 3800,
+    estimatedValue: 3_800,
     status: "Hot Lead",
-    contactInfo: "+1 (555) 456-7890",
+    contactInfo: "+91 76543 21098",
     notes: "Opening new restaurant, needs full coverage",
   },
   {
     id: "4",
-    clientName: "Sophia Garcia",
+    clientName: "Anjali Verma",
     date: "2025-04-08",
     time: "09:20 AM",
     interestType: "Life Insurance",
-    estimatedValue: 2200,
+    estimatedValue: 2_200,
     status: "Cold Lead",
-    contactInfo: "+1 (555) 234-5678",
+    contactInfo: "+91 65432 10987",
     notes: "Requested information, price sensitive",
   },
   {
     id: "5",
-    clientName: "Jordan Smith",
+    clientName: "Karan Singh",
     date: "2025-04-07",
     time: "03:40 PM",
     interestType: "Health Insurance",
-    estimatedValue: 1850,
+    estimatedValue: 1_850,
     status: "Warm Lead",
-    contactInfo: "+1 (555) 876-5432",
+    contactInfo: "+91 54321 09876",
     notes: "Looking for family plan with dental coverage",
   },
   {
     id: "6",
-    clientName: "Olivia Johnson",
+    clientName: "Meera Iyer",
     date: "2025-04-07",
     time: "10:50 AM",
     interestType: "Auto Insurance",
     estimatedValue: 950,
     status: "Hot Lead",
-    contactInfo: "+1 (555) 345-6789",
+    contactInfo: "+91 43210 98765",
     notes: "Current policy expiring next month, comparing rates",
   },
   {
     id: "7",
-    clientName: "Tyrone Williams",
+    clientName: "Vikram Rao",
     date: "2025-04-06",
     time: "02:15 PM",
     interestType: "Rental Insurance",
     estimatedValue: 450,
     status: "Warm Lead",
-    contactInfo: "+1 (555) 654-3210",
+    contactInfo: "+91 32109 87654",
     notes: "Moving to new apartment, required by landlord",
   },
 ];
 
-// Summary statistics
 const summaryStats = {
   totalLeads: 36,
   hotLeads: 14,
@@ -103,7 +116,6 @@ const summaryStats = {
 export default function DsrReport() {
   const [activeTab, setActiveTab] = useState("all");
 
-  // Filter data based on active tab
   const filteredData =
     activeTab === "all"
       ? FAKE_DSR_DATA
@@ -115,8 +127,7 @@ export default function DsrReport() {
             : item.status === "Cold Lead"
         );
 
-  // Function to get status color
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "Hot Lead":
         return "#ff6b6b";
@@ -129,7 +140,7 @@ export default function DsrReport() {
     }
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: DsrData }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.clientName}>{item.clientName}</Text>
@@ -149,7 +160,7 @@ export default function DsrReport() {
           <Text style={styles.contactInfo}>{item.contactInfo}</Text>
         </View>
         <Text style={[styles.amount, { color: themeColors.primary }]}>
-          ${item.estimatedValue.toLocaleString()}
+          ₹{item.estimatedValue.toLocaleString()}
         </Text>
       </View>
 
@@ -167,14 +178,14 @@ export default function DsrReport() {
           <Icon name="clock-outline" size={14} color="#7d8597" />
           <Text style={styles.metaText}>{item.time}</Text>
         </View>
-        <View style={styles.actions}>
+        {/* <View style={styles.actions}>
           <TouchableOpacity style={styles.actionButton}>
             <Icon name="phone" size={18} color={themeColors.primary} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton}>
             <Icon name="email-outline" size={18} color={themeColors.primary} />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </View>
   );
@@ -182,8 +193,6 @@ export default function DsrReport() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Daily Sales Report</Text>
-        <Text style={styles.headerSubtitle}>Interested Customers</Text>
         <Text style={styles.headerDate}>April 9, 2025</Text>
       </View>
 
@@ -218,7 +227,7 @@ export default function DsrReport() {
           <View style={styles.statItem}>
             <Text style={styles.statLabel}>Potential Value</Text>
             <Text style={styles.statValue}>
-              ${summaryStats.potentialValue.toLocaleString()}
+              ₹{summaryStats.potentialValue.toLocaleString()}
             </Text>
           </View>
           <View style={styles.statDivider} />
@@ -315,7 +324,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    padding: 20,
+    padding: 16,
   },
   header: {
     marginBottom: 20,
@@ -490,6 +499,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
   },
   dateTime: {
     flexDirection: "row",

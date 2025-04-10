@@ -3,67 +3,26 @@ import { useCallback } from "react";
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
-  FlatList,
   StyleSheet,
   Alert,
   BackHandler,
+  ScrollView,
+  Image,
+  StatusBar,
+  Dimensions,
 } from "react-native";
 
-import { themeColors } from "../../utils/colors";
-
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import { useFocusEffect, useRouter } from "expo-router";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useFocusEffect } from "@react-navigation/native";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 
-import { useRouter } from "expo-router";
-
-const clients = [
-  {
-    id: "1",
-    name: "Sharma Traders",
-    contact: "9876543210",
-    location: "Delhi",
-  },
-  {
-    id: "2",
-    name: "Patel Distributors",
-    contact: "9123456789",
-    location: "Mumbai",
-  },
-  {
-    id: "3",
-    name: "Gupta Enterprises",
-    contact: "9234567891",
-    location: "Kolkata",
-  },
-  {
-    id: "4",
-    name: "Nair & Sons",
-    contact: "9345678912",
-    location: "Chennai",
-  },
-];
+import { themeColors } from "../../utils/colors";
 
 export default function Dashboard() {
-  const { primary, background } = themeColors;
-
   const router = useRouter();
-
-  const renderClient = ({
-    item,
-  }: {
-    item: { name: string; location: string; contact: string };
-  }) => (
-    <View style={styles.clientCard}>
-      <Text style={styles.clientName}>{item.name}</Text>
-      <Text style={styles.clientDetails}>Contact: {item.contact}</Text>
-      <Text style={styles.clientDetails}>Location: {item.location}</Text>
-    </View>
-  );
 
   useFocusEffect(
     useCallback(() => {
@@ -97,242 +56,532 @@ export default function Dashboard() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: background }}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: 15,
-          alignSelf: "center",
-          paddingVertical: 20,
-        }}
-      >
-        <View
-          style={{
-            elevation: 1,
-            width: 90,
-            height: 90,
-            borderColor: primary,
-            borderWidth: 1,
-            borderRadius: 100,
-            marginRight: 10,
-          }}
-        >
-          <Image
-            source={require("../../assets/images/new-avatar.jpg")}
-            style={{
-              width: "100%",
-              height: "100%",
-              borderRadius: 40,
-              marginRight: 15,
-            }}
-          />
-        </View>
-
-        <View>
-          <Text
-            style={{
-              fontSize: responsiveFontSize(2),
-              fontWeight: "bold",
-              color: "#000",
-            }}
-          >
-            Ser Criston Cole
-          </Text>
-          <Text style={{ fontSize: responsiveFontSize(1.8), color: "gray" }}>
-            Knight
-          </Text>
-        </View>
-      </View>
-
-      <TouchableOpacity
-        onPress={() => router.push("/policy-holder")}
-        style={{
-          backgroundColor: primary,
-          paddingVertical: 12,
-          width: "97%",
-          alignSelf: "center",
-          borderRadius: 12,
-          marginTop: 20,
-        }}
-      >
-        <Text
-          style={{
-            color: "#fff",
-            fontWeight: "500",
-            fontSize: responsiveFontSize(2.2),
-            textAlign: "center",
-          }}
-        >
-          Client Form
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => router.push("/fprequirement")}
-        style={{
-          backgroundColor: primary,
-          paddingVertical: 12,
-          width: "97%",
-          alignSelf: "center",
-          borderRadius: 12,
-          marginTop: 15,
-        }}
-      >
-        <Text
-          style={{
-            color: "#fff",
-            fontWeight: "500",
-            fontSize: responsiveFontSize(2.2),
-            textAlign: "center",
-          }}
-        >
-          Details for FP Requirement
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => router.push("/daily-report")}
-        style={{
-          backgroundColor: primary,
-          paddingVertical: 12,
-          width: "97%",
-          alignSelf: "center",
-          borderRadius: 12,
-          marginTop: 15,
-          marginBottom: 30,
-        }}
-      >
-        <Text
-          style={{
-            color: "#fff",
-            fontWeight: "500",
-            fontSize: responsiveFontSize(2.2),
-            textAlign: "center",
-          }}
-        >
-          Daily Report
-        </Text>
-      </TouchableOpacity>
-
-      <View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            marginBottom: 20,
-          }}
-        >
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#f0f4ff",
-              padding: 20,
-              borderRadius: 12,
-              width: "45%",
-              elevation: 3,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: responsiveFontSize(3),
-                fontWeight: "bold",
-                color: "#0051BA",
-              }}
-            >
-              ₹ 120000
-            </Text>
-            <Text
-              style={{
-                fontSize: responsiveFontSize(2),
-                fontWeight: "500",
-                color: "#333",
-                marginTop: 5,
-              }}
-            >
-              Login
-            </Text>
-          </View>
-
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#f0f4ff",
-              padding: 20,
-              borderRadius: 12,
-              width: "45%",
-              elevation: 3,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: responsiveFontSize(3),
-                fontWeight: "bold",
-                color: "#0051BA",
-              }}
-            >
-              ₹ 880000
-            </Text>
-            <Text
-              style={{
-                fontSize: responsiveFontSize(2),
-                fontWeight: "500",
-                color: "#333",
-                marginTop: 5,
-              }}
-            >
-              Issued
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <FlatList
-        data={clients}
-        keyExtractor={(item) => item.id}
-        renderItem={renderClient}
-        contentContainerStyle={styles.listContainer}
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={themeColors.primary}
       />
-    </SafeAreaView>
+      <SafeAreaView style={styles.container}>
+        <ScrollView
+          style={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContentContainer}
+        >
+          {/* Header Section */}
+          <View style={styles.header}>
+            <Text style={styles.greeting}>Welcome back,</Text>
+            <Text style={styles.userName}>Suman Jyoti Phukan</Text>
+          </View>
+
+          {/* Banner Image with Overlay */}
+          <View style={styles.bannerContainer}>
+            <Image
+              source={require("../../assets/images/banner.jpg")}
+              style={styles.bannerImage}
+            />
+          </View>
+
+          {/* Action Buttons with Card-Style Design */}
+          <View style={styles.actionContainer}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => router.push("/policy-holder")}
+            >
+              <View
+                style={[
+                  styles.actionIconPlaceholder,
+                  { backgroundColor: "rgba(255, 218, 26, 0.2)" },
+                ]}
+              >
+                <Text style={styles.iconText}>📝</Text>
+              </View>
+              <Text style={styles.actionButtonText}>New Client</Text>
+              <Text style={styles.actionButtonDescription}>
+                Add a new policy holder
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => router.push("/daily-report")}
+            >
+              <View
+                style={[
+                  styles.actionIconPlaceholder,
+                  { backgroundColor: "rgba(0, 51, 102, 0.15)" },
+                ]}
+              >
+                <Text style={styles.iconText}>📊</Text>
+              </View>
+              <Text style={styles.actionButtonText}>Create DSR</Text>
+              <Text style={styles.actionButtonDescription}>
+                Daily sales report
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Quick Action Buttons */}
+
+          {/* Stats Cards */}
+          <View style={styles.statsContainer}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Performance Overview</Text>
+            </View>
+
+            <View style={styles.statsCardsRow}>
+              <View style={styles.statsCard}>
+                <View style={styles.statContent}>
+                  <Text style={styles.statAmount}>₹120,000</Text>
+                  <Text style={styles.statLabel}>Login</Text>
+                </View>
+                <View style={styles.statIconWrapper}>
+                  <View
+                    style={[
+                      styles.statIcon,
+                      { backgroundColor: "rgba(255, 107, 107, 0.1)" },
+                    ]}
+                  >
+                    <Text style={styles.statIconText}>🔄</Text>
+                  </View>
+                </View>
+                <View
+                  style={[
+                    styles.cardAccent,
+                    { backgroundColor: themeColors.hotLead },
+                  ]}
+                />
+              </View>
+
+              <View style={styles.statsCard}>
+                <View style={styles.statContent}>
+                  <Text style={styles.statAmount}>₹880,000</Text>
+                  <Text style={styles.statLabel}>Issued</Text>
+                </View>
+                <View style={styles.statIconWrapper}>
+                  <View
+                    style={[
+                      styles.statIcon,
+                      { backgroundColor: "rgba(255, 218, 26, 0.1)" },
+                    ]}
+                  >
+                    <Text style={styles.statIconText}>✅</Text>
+                  </View>
+                </View>
+                <View
+                  style={[
+                    styles.cardAccent,
+                    { backgroundColor: themeColors.secondary },
+                  ]}
+                />
+              </View>
+            </View>
+          </View>
+
+          {/* Recent Activity Section - Enlarged */}
+          <View style={styles.recentActivityContainer}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Recent Activity</Text>
+              <TouchableOpacity>
+                <Text style={styles.viewAllText}>View All</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Activity item */}
+            <View style={styles.activityItem}>
+              <View
+                style={[
+                  styles.activityIcon,
+                  { backgroundColor: "rgba(255, 107, 107, 0.15)" },
+                ]}
+              >
+                <Text style={styles.activityIconText}>👤</Text>
+              </View>
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>New Client Added</Text>
+                <Text style={styles.activityDescription}>
+                  Rahul Sharma • LIC Policy
+                </Text>
+                <Text style={styles.activityTime}>Today, 10:45 AM</Text>
+              </View>
+            </View>
+
+            {/* Activity item */}
+            <View style={styles.activityItem}>
+              <View
+                style={[
+                  styles.activityIcon,
+                  { backgroundColor: "rgba(255, 218, 26, 0.15)" },
+                ]}
+              >
+                <Text style={styles.activityIconText}>📋</Text>
+              </View>
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>Policy Issued</Text>
+                <Text style={styles.activityDescription}>
+                  Priya Patel • Health Insurance
+                </Text>
+                <Text style={styles.activityTime}>Yesterday, 3:30 PM</Text>
+              </View>
+            </View>
+
+            {/* Activity item */}
+            <View style={styles.activityItem}>
+              <View
+                style={[
+                  styles.activityIcon,
+                  { backgroundColor: "rgba(0, 51, 102, 0.15)" },
+                ]}
+              >
+                <Text style={styles.activityIconText}>💰</Text>
+              </View>
+              <View style={styles.activityContent}>
+                <Text style={styles.activityTitle}>Premium Collected</Text>
+                <Text style={styles.activityDescription}>
+                  Amit Kumar • ₹24,500
+                </Text>
+                <Text style={styles.activityTime}>Mar 14, 2023</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.loadMoreButton}>
+              <Text style={styles.loadMoreText}>Load More</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  listContainer: {
-    paddingBottom: 20,
-    paddingHorizontal: 10,
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f7fa",
   },
-  clientCard: {
-    backgroundColor: "white",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContentContainer: {
+    padding: 16,
+    paddingBottom: 30,
+  },
+  header: {
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  greeting: {
+    fontSize: responsiveFontSize(2),
+    color: "#666",
+  },
+  userName: {
+    fontSize: responsiveFontSize(2.8),
+    fontWeight: "bold",
+    color: themeColors.primary,
+  },
+  bannerContainer: {
+    height: 180,
+    borderRadius: 16,
+    overflow: "hidden",
+    marginBottom: 20,
+    position: "relative",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  bannerImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  bannerOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 51, 102, 0.7)",
+    padding: 16,
+  },
+  bannerText: {
+    color: "#fff",
+    fontSize: responsiveFontSize(2.3),
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  bannerButton: {
+    backgroundColor: themeColors.secondary,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignSelf: "flex-start",
+  },
+  bannerButtonText: {
+    color: themeColors.primary,
+    fontWeight: "bold",
+    fontSize: responsiveFontSize(1.6),
+  },
+  actionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  actionButton: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 16,
+    width: "48%",
+    alignItems: "center",
+    elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
-    borderLeftWidth: 5,
-    borderLeftColor: "#0051BA",
   },
-  clientName: {
-    fontSize: 15,
-    fontWeight: "bold",
-    marginBottom: 5,
+  actionIconPlaceholder: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  iconText: {
+    fontSize: 24,
+  },
+  actionButtonText: {
+    fontSize: responsiveFontSize(1.9),
+    fontWeight: "600",
+    color: themeColors.primary,
+    marginBottom: 4,
+  },
+  actionButtonDescription: {
+    fontSize: responsiveFontSize(1.5),
+    color: "#888",
+    textAlign: "center",
+  },
+  quickActionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  quickActionButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 25,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  quickActionText: {
+    color: themeColors.primary,
+    fontWeight: "500",
+    fontSize: responsiveFontSize(1.7),
+  },
+  statsContainer: {
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: responsiveFontSize(2.2),
+    fontWeight: "700",
     color: "#333",
   },
-  clientDetails: {
-    fontSize: 14,
+  viewAllText: {
+    fontSize: responsiveFontSize(1.7),
+    color: themeColors.primary,
+    fontWeight: "500",
+  },
+  statsCardsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  statsCard: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 16,
+    width: "48%",
+    flexDirection: "row",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    position: "relative",
+    overflow: "hidden",
+  },
+  statContent: {
+    flex: 1,
+  },
+  statIconWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  statIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  statIconText: {
+    fontSize: 18,
+  },
+  cardAccent: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 4,
+    height: "100%",
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+  },
+  statAmount: {
+    fontSize: responsiveFontSize(2.5),
+    fontWeight: "bold",
+    color: themeColors.primary,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: responsiveFontSize(1.8),
     color: "#666",
+  },
+  goalProgressContainer: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 16,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  goalProgressHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  goalProgressTitle: {
+    fontSize: responsiveFontSize(1.9),
+    fontWeight: "600",
+    color: "#333",
+  },
+  goalProgressPercentage: {
+    fontSize: responsiveFontSize(1.9),
+    fontWeight: "bold",
+    color: themeColors.primary,
+  },
+  progressBarContainer: {
+    marginBottom: 8,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#f0f0f0",
+    overflow: "hidden",
+  },
+  progressBar: {
+    flex: 1,
+    borderRadius: 6,
+    overflow: "hidden",
+  },
+  progressFill: {
+    width: "67%",
+    height: "100%",
+    backgroundColor: themeColors.secondary,
+    borderRadius: 6,
+  },
+  goalProgressText: {
+    fontSize: responsiveFontSize(1.7),
+    color: "#666",
+    textAlign: "right",
+  },
+  recentActivityContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    marginBottom: 8,
+    minHeight: 300,
+  },
+  activityItem: {
+    flexDirection: "row",
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+    paddingBottom: 16,
+  },
+  activityIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  activityIconText: {
+    fontSize: 20,
+  },
+  activityContent: {
+    flex: 1,
+  },
+  activityTitle: {
+    fontSize: responsiveFontSize(1.9),
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 4,
+  },
+  activityDescription: {
+    fontSize: responsiveFontSize(1.7),
+    color: "#666",
+    marginBottom: 4,
+  },
+  activityTime: {
+    fontSize: responsiveFontSize(1.5),
+    color: "#999",
+  },
+  loadMoreButton: {
+    backgroundColor: themeColors.lightTheme,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  loadMoreText: {
+    color: themeColors.primary,
+    fontSize: responsiveFontSize(1.8),
+    fontWeight: "500",
+  },
+  emptyStateContainer: {
+    padding: 24,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyStateText: {
+    fontSize: responsiveFontSize(2),
+    color: "#888",
+    marginBottom: 16,
+  },
+  refreshButton: {
+    backgroundColor: themeColors.lightTheme,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  refreshButtonText: {
+    color: themeColors.primary,
+    fontWeight: "500",
   },
 });

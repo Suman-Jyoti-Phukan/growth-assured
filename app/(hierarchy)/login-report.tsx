@@ -77,7 +77,6 @@ const FAKE_LOGIN_DATA = [
   },
 ];
 
-// Summary statistics
 const summaryStats = {
   totalPolicies: 28,
   totalSold: 22,
@@ -89,7 +88,6 @@ const summaryStats = {
 export default function LoginReport() {
   const [activeTab, setActiveTab] = useState("all");
 
-  // Filter data based on active tab
   const filteredData =
     activeTab === "all"
       ? FAKE_LOGIN_DATA
@@ -99,7 +97,7 @@ export default function LoginReport() {
             : item.status === "Pending"
         );
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: (typeof FAKE_LOGIN_DATA)[number] }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.clientName}>{item.clientName}</Text>
@@ -119,7 +117,7 @@ export default function LoginReport() {
           <Text style={styles.policyNumber}>{item.policyNumber}</Text>
         </View>
         <Text style={[styles.amount, { color: themeColors.primary }]}>
-          ${item.amount.toLocaleString()}
+          ₹{item.amount.toLocaleString()}
         </Text>
       </View>
 
@@ -139,7 +137,6 @@ export default function LoginReport() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Policy Activity Report</Text>
         <Text style={styles.headerDate}>April 9, 2025</Text>
       </View>
 
@@ -238,7 +235,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
-    padding: 20,
+    padding: 16,
   },
   header: {
     marginBottom: 20,
