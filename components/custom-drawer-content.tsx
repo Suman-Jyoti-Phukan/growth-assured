@@ -5,8 +5,6 @@ import {
 
 import { StyleSheet, View, Image, Text } from "react-native";
 
-import RoleHeirarchy from "./role-heirarchy";
-
 export default function CustomDrawerContent(props: any) {
   return (
     <DrawerContentScrollView {...props}>

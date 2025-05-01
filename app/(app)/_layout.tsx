@@ -163,6 +163,16 @@ export default function AppLayout() {
             ),
           }}
         />
+        <Drawer.Screen
+          name="test"
+          options={{
+            drawerLabel: "Test",
+            title: "Test",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="home" color={color} size={size} />
+            ),
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );

@@ -4,81 +4,188 @@ import {
   Text,
   TextInput,
   ScrollView,
-  Dimensions,
   StatusBar,
   TouchableOpacity,
   SafeAreaView,
   StyleSheet,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { themeColors } from "@/utils/colors";
+import axios from "axios";
 
-// Using the same modern color palette from previous design
+const ROOT_URL =
+  "https://growthassured.webinfoghy.co.in/api/employee/daily/report/submit";
+
+// Hardcoded Bearer token (not recommended for production)
+const BEARER_TOKEN = "4|2ZuuUXpr8Ob9l9zz086Ui8egNLFsxQPcwgPFluHE9d2fcd39";
+
 const COLORS = {
-  primary: "#5B67CA", // Modern purple-blue
-  secondary: "#F1F5FF", // Light blue bg
-  accent: "#FF8F6C", // Coral accent
-  background: "#FFFFFF", // White background
-  text: "#333340", // Dark text
-  lightText: "#9A9AB0", // Light text
-  border: "#E5E7EB", // Border color
-  inputBg: "#F9FAFC", // Input background
-  cardBg: "#FFFFFF", // Card background
+  primary: "#5B67CA",
+  secondary: "#F1F5FF",
+  accent: "#FF8F6C",
+  background: "#FFFFFF",
+  text: "#333340",
+  lightText: "#9A9AB0",
+  border: "#E5E7EB",
+  inputBg: "#F9FAFC",
+  cardBg: "#FFFFFF",
 };
 
-// Define the icons
-const icons = {
-  Name: "user",
-  Phone: "phone",
-  Remark: "comment",
-  Occupation: "briefcase",
-};
+interface FieldProps {
+  value: string;
+  onChangeText: (text: string) => void;
+}
 
-const DailyReportScreen = () => {
-  const { width } = Dimensions.get("window");
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
-
-  const updateFormValue = (key: string, value: string) => {
-    setFormValues((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  // Modern form field with icon
-  const FormField = ({
-    label,
-    iconName,
-    value,
-    onChangeText,
-    placeholder = "",
-  }: {
-    label: string;
-    iconName: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    placeholder?: string;
-  }) => (
+const NameField: React.FC<FieldProps> = ({ value, onChangeText }) => {
+  return (
     <View style={styles.fieldContainer}>
       <View style={styles.labelContainer}>
         <View style={styles.iconContainer}>
-          <FontAwesome name={iconName} size={16} color={COLORS.primary} />
+          <FontAwesome name="user" size={16} color={COLORS.primary} />
         </View>
-        <Text style={styles.fieldLabel}>{label}</Text>
+        <Text style={styles.fieldLabel}>Name</Text>
       </View>
-
       <View style={styles.inputWrapper}>
         <TextInput
           style={styles.textInput}
           value={value}
           onChangeText={onChangeText}
-          placeholder={placeholder || label}
+          placeholder="Enter name"
           placeholderTextColor={COLORS.lightText}
+          keyboardType="default"
         />
       </View>
     </View>
   );
+};
+
+const PhoneField: React.FC<FieldProps> = ({ value, onChangeText }) => {
+  return (
+    <View style={styles.fieldContainer}>
+      <View style={styles.labelContainer}>
+        <View style={styles.iconContainer}>
+          <FontAwesome name="phone" size={16} color={COLORS.primary} />
+        </View>
+        <Text style={styles.fieldLabel}>Phone</Text>
+      </View>
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.textInput}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder="Enter phone"
+          placeholderTextColor={COLORS.lightText}
+          keyboardType="phone-pad"
+        />
+      </View>
+    </View>
+  );
+};
+
+const RemarkField: React.FC<FieldProps> = ({ value, onChangeText }) => {
+  return (
+    <View style={styles.fieldContainer}>
+      <View style={styles.labelContainer}>
+        <View style={styles.iconContainer}>
+          <FontAwesome name="comment" size={16} color={COLORS.primary} />
+        </View>
+        <Text style={styles.fieldLabel}>Remark</Text>
+      </View>
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.textInput}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder="Enter remark"
+          placeholderTextColor={COLORS.lightText}
+          keyboardType="default"
+        />
+      </View>
+    </View>
+  );
+};
+
+const OccupationField: React.FC<FieldProps> = ({ value, onChangeText }) => {
+  return (
+    <View style={styles.fieldContainer}>
+      <View style={styles.labelContainer}>
+        <View style={styles.iconContainer}>
+          <FontAwesome name="briefcase" size={16} color={COLORS.primary} />
+        </View>
+        <Text style={styles.fieldLabel}>Occupation</Text>
+      </View>
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.textInput}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder="Enter occupation"
+          placeholderTextColor={COLORS.lightText}
+          keyboardType="default"
+        />
+      </View>
+    </View>
+  );
+};
+
+export default function DailyReportScreen() {
+  console.log(ROOT_URL);
+
+  const [formValues, setFormValues] = useState<{
+    name: string;
+    phone: string;
+    remark: string;
+    occupation: string;
+  }>({
+    name: "",
+    phone: "",
+    remark: "",
+    occupation: "",
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSubmit = async () => {
+    if (!formValues.name.trim() || !formValues.phone.trim()) {
+      Alert.alert("Validation Error", "Name and Phone are required fields.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post(ROOT_URL, formValues, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${BEARER_TOKEN}`,
+        },
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        Alert.alert("Success", "Report submitted successfully!");
+        setFormValues({ name: "", phone: "", remark: "", occupation: "" });
+      } else {
+        throw new Error("Unexpected response from server");
+      }
+
+      console.log(response);
+    } catch (error) {
+      console.log("Server error:", error);
+
+      let errorMessage = "Something went wrong. Please try again.";
+      if ((error as any).response) {
+        errorMessage =
+          (error as any).response.data?.message ||
+          `Server error: ${(error as any).response.status}`;
+      } else if ((error as any).request) {
+        errorMessage =
+          "No response from server. Check your internet connection.";
+      }
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,45 +194,70 @@ const DailyReportScreen = () => {
         backgroundColor={COLORS.background}
         animated={true}
       />
-
       <View style={styles.header}>
         <Text style={styles.headerSubtitle}>
           Enter today's activity details
         </Text>
       </View>
-
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.formSection}>
-          {Object.keys(icons).map((item) => (
-            <FormField
-              key={item}
-              label={item}
-              iconName={icons[item as keyof typeof icons]}
-              value={formValues[item] || ""}
-              onChangeText={(text) => updateFormValue(item, text)}
-              placeholder={`Enter ${item.toLowerCase()}`}
-            />
-          ))}
-        </View>
-
-        <TouchableOpacity
-          style={styles.submitButton}
-          activeOpacity={0.8}
-          onPress={() => alert("Report Submitted")}
-        >
-          <FontAwesome
-            name="send"
-            size={18}
-            color="#FFF"
-            style={{ marginRight: 10 }}
+          <NameField
+            value={formValues.name}
+            onChangeText={(text) =>
+              setFormValues({ ...formValues, name: text })
+            }
           />
-          <Text style={styles.submitButtonText}>Submit Report</Text>
+          <PhoneField
+            value={formValues.phone}
+            onChangeText={(text) =>
+              setFormValues({ ...formValues, phone: text })
+            }
+          />
+          <RemarkField
+            value={formValues.remark}
+            onChangeText={(text) =>
+              setFormValues({ ...formValues, remark: text })
+            }
+          />
+          <OccupationField
+            value={formValues.occupation}
+            onChangeText={(text) =>
+              setFormValues({ ...formValues, occupation: text })
+            }
+          />
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.submitButton,
+            isLoading && styles.submitButtonDisabled,
+          ]}
+          activeOpacity={0.8}
+          onPress={handleSubmit}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator
+              size="small"
+              color="#FFF"
+              style={{ marginRight: 10 }}
+            />
+          ) : (
+            <FontAwesome
+              name="send"
+              size={18}
+              color="#FFF"
+              style={{ marginRight: 10 }}
+            />
+          )}
+          <Text style={styles.submitButtonText}>
+            {isLoading ? "Submitting..." : "Submit Report"}
+          </Text>
         </TouchableOpacity>
-
         <View style={styles.infoContainer}>
           <FontAwesome name="info-circle" size={14} color={COLORS.lightText} />
           <Text style={styles.infoText}>
@@ -135,7 +267,7 @@ const DailyReportScreen = () => {
       </ScrollView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -227,6 +359,11 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+  submitButtonDisabled: {
+    backgroundColor: COLORS.primary + "80", // 50% opacity when disabled
+    shadowOpacity: 0.1,
+    elevation: 2,
+  },
   submitButtonText: {
     color: "#FFF",
     fontSize: responsiveFontSize(2),
@@ -246,5 +383,3 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
-
-export default DailyReportScreen;

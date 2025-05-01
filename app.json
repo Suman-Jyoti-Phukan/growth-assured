@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "growth-assured",
+    "name": "Growth Assured",
     "slug": "growth-assured",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sumanjphukan.growthassured"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f916816a-2ad1-4ca9-af9e-677b69805da4"
+      }
     }
   }
 }
