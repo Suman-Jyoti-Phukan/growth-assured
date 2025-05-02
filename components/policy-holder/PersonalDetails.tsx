@@ -1,17 +1,20 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { FormField } from "./FormField";
+
 import { responsiveFontSize } from "react-native-responsive-dimensions";
+
 import { COLORS } from "./colors";
 
 type IconMap = {
   [key: string]: string;
 };
 
+/** Fields are renders based on keys of this object. If you want to change the field position change the field position. */
 const icons: IconMap = {
+  "Phone No.": "phone",
   Name: "user",
   DOB: "calendar",
-  "Mob No": "phone",
   "E-Mail Id": "envelope",
   "Identification mark": "id-card",
   "Father's Name": "male",
@@ -33,6 +36,8 @@ const icons: IconMap = {
   "Existing Insurance Cover": "shield",
 };
 
+const numbericFields = ["Phone No.", "Height", "Weight", "Annual CTC/Income"];
+
 interface PersonalDetailsPhaseProps {
   formValues: Record<string, string>;
   updateFormValue: (key: string, value: string) => void;
@@ -46,16 +51,21 @@ export const PersonalDetailsPhase: React.FC<PersonalDetailsPhaseProps> = ({
 }) => (
   <View style={personalDetailsStyles.formSection}>
     <Text style={personalDetailsStyles.sectionTitle}>Personal Details</Text>
-    {Object.keys(icons).map((item) => (
-      <FormField
-        key={item}
-        label={item}
-        iconName={icons[item]}
-        value={formValues[item] || ""}
-        onChangeText={(text) => updateFormValue(item, text)}
-        required={requiredFields.includes(item)}
-      />
-    ))}
+    {Object.keys(icons).map((item) => {
+      const renderKeyboardTypeAsNumberic = numbericFields.includes(item);
+
+      return (
+        <FormField
+          key={item}
+          label={item}
+          iconName={icons[item]}
+          value={formValues[item] || ""}
+          onChangeText={(text) => updateFormValue(item, text)}
+          required={requiredFields.includes(item)}
+          isKeyboardTypeNumberic={renderKeyboardTypeAsNumberic}
+        />
+      );
+    })}
   </View>
 );
 

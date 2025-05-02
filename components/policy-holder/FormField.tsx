@@ -15,6 +15,7 @@ interface FormFieldProps {
   isDropdown?: boolean;
   onPress?: () => void;
   required?: boolean;
+  isKeyboardTypeNumberic?: boolean;
 }
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -32,6 +33,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   isDropdown = false,
   onPress,
   required = false,
+  isKeyboardTypeNumberic = false,
 }) => (
   <View style={formFieldStyles.fieldContainer}>
     <Text style={formFieldStyles.fieldLabel}>
@@ -65,6 +67,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           onChangeText={onChangeText}
           placeholder={placeholder || label}
           placeholderTextColor={COLORS.lightText}
+          keyboardType={isKeyboardTypeNumberic ? "number-pad" : "default"}
         />
       )}
     </View>

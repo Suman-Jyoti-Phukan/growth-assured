@@ -132,6 +132,8 @@ export default function PolicyHolderScreen() {
 
   const [formValues, setFormValues] = useState<Record<string, string>>({});
 
+  console.log(formValues);
+
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
@@ -143,6 +145,8 @@ export default function PolicyHolderScreen() {
   const [documentVerification, setDocumentVerification] = useState<
     Record<string, boolean | undefined>
   >({});
+
+  console.log(documentImages);
 
   const [categoryModalVisible, setCategoryModalVisible] =
     useState<boolean>(false);
@@ -199,12 +203,14 @@ export default function PolicyHolderScreen() {
         );
         return;
       }
+
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [6, 3],
         quality: 0.8,
       });
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedImage = result.assets[0];
         const documentUpload: DocumentUpload = {
@@ -212,6 +218,7 @@ export default function PolicyHolderScreen() {
           name: documentName.replace(/\s+/g, "_").toLowerCase() + ".jpg",
           type: "image/jpeg",
         };
+
         setDocumentImages((prev) => ({
           ...prev,
           [documentName]: documentUpload,
@@ -283,6 +290,33 @@ export default function PolicyHolderScreen() {
 
   const handleSubmit = (): void => {
     setReviewModalVisible(false);
+
+    const data = {
+      catergory_id: 2,
+      sub_category_id: 2,
+      mobile: formValues["Phone No."],
+      name: formValues["Name"],
+      dob: formValues["DOB"],
+      email: formValues["E-Mail Id"],
+      id_marK: formValues["Identification mark"],
+      f_name: formValues["Father's Name"],
+      m_name: formValues["Mother's Name"],
+      address: formValues["Address as per Proof"],
+      landmark: formValues["Landmark"],
+      height: formValues["Height"],
+      birth_place: formValues["Place of Birth"],
+      qualification: formValues["Education Qualification"],
+      nominee_name: formValues["Nominee Name"],
+      nominee_dob: formValues["Nominee DOB"],
+      nominee_relation: formValues["Relationship"],
+      work_org: formValues["Name of Organisation"],
+      work_org_type: formValues["Type of Organisation"],
+      designation: formValues["Designation"],
+      workplace: formValues["Workplace City"],
+      annual_ctc: formValues["Annual CTC/Income"],
+      existing_cover: formValues["Existing Insurance Cover"],
+    };
+
     Alert.alert(
       "Success",
       "Your application has been submitted successfully. You will receive a confirmation email shortly.",
@@ -399,10 +433,10 @@ export default function PolicyHolderScreen() {
             },
           ]}
           onPress={handleNextPhase}
-          disabled={
-            (currentPhase === 0 && !isPolicyInfoComplete()) ||
-            (currentPhase === 1 && !isPersonalDetailsComplete())
-          }
+          // disabled={
+          //   (currentPhase === 0 && !isPolicyInfoComplete()) ||
+          //   (currentPhase === 1 && !isPersonalDetailsComplete())
+          // }
         >
           <Text style={styles.navigationButtonText}>
             {currentPhase < 2 ? "Next" : "Review Application"}

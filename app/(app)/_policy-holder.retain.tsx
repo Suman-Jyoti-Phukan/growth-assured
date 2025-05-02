@@ -911,10 +911,10 @@ export default function PolicyHolderScreen() {
             },
           ]}
           onPress={handleNextPhase}
-          disabled={
-            (currentPhase === 0 && !isPolicyInfoComplete()) ||
-            (currentPhase === 1 && !isPersonalDetailsComplete())
-          }
+          // disabled={
+          //   (currentPhase === 0 && !isPolicyInfoComplete()) ||
+          //   (currentPhase === 1 && !isPersonalDetailsComplete())
+          // }
         >
           <Text style={styles.navigationButtonText}>
             {currentPhase < 2 ? "Next" : "Review Application"}
