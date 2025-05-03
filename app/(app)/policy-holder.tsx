@@ -27,6 +27,7 @@ import { DocumentsPhase } from "@/components/policy-holder/DocumentPhrase";
 import { ImagePreviewModal } from "@/components/policy-holder/ImagePreviewModal";
 
 import { ReviewModal } from "@/components/policy-holder/ReviewModal";
+import axios from "axios";
 
 type Colors = {
   primary: string;
@@ -170,7 +171,7 @@ export default function PolicyHolderScreen() {
   const requiredPersonalFields: string[] = [
     "Name",
     "DOB",
-    "Mob No",
+    "Phone No.",
     "E-Mail Id",
     "Father's Name",
     "Mother's Name",
@@ -180,10 +181,20 @@ export default function PolicyHolderScreen() {
   const isPolicyInfoComplete = (): boolean =>
     selectedCategory !== "" && selectedSubcategory !== "";
 
-  const isPersonalDetailsComplete = (): boolean =>
-    requiredPersonalFields.every(
-      (field) => formValues[field] && formValues[field].trim() !== ""
+  const isPersonalDetailsComplete = (): boolean => {
+    const missingFields = requiredPersonalFields.filter(
+      (field) => !formValues[field] || formValues[field].trim() === ""
     );
+
+    if (missingFields.length > 0) {
+      console.log("Missing or empty fields:", missingFields);
+      return false;
+    }
+
+    return true;
+  };
+
+  console.log(isPersonalDetailsComplete(), isPolicyInfoComplete());
 
   const areAllDocumentsUploaded = (): boolean =>
     Object.keys(documentIcons).every((doc) => documentImages[doc]);
@@ -288,12 +299,21 @@ export default function PolicyHolderScreen() {
     setReviewModalVisible(true);
   };
 
-  const handleSubmit = (): void => {
-    setReviewModalVisible(false);
+  const createFormData = () => {
+    const documentImagesMap = {
+      Pan: "pan_card_image",
+      "Aadhar Card": "adhaar_card_image",
+      "Cancelled Cheque or Passbook Front Page": "cheque_image",
+      Photo: "profile_image",
+    };
 
-    const data = {
-      catergory_id: 2,
-      sub_category_id: 2,
+    const formData = new FormData();
+
+    formData.append("catergory_id", "2");
+
+    formData.append("sub_category_id", "2");
+
+    Object.entries({
       mobile: formValues["Phone No."],
       name: formValues["Name"],
       dob: formValues["DOB"],
@@ -315,13 +335,57 @@ export default function PolicyHolderScreen() {
       workplace: formValues["Workplace City"],
       annual_ctc: formValues["Annual CTC/Income"],
       existing_cover: formValues["Existing Insurance Cover"],
-    };
+    }).forEach(([key, value]) => {
+      formData.append(key, value ?? "");
+    });
 
-    Alert.alert(
-      "Success",
-      "Your application has been submitted successfully. You will receive a confirmation email shortly.",
-      [{ text: "OK" }]
-    );
+    // Append image files
+    Object.entries(documentImagesMap).forEach(([label, key]) => {
+      const file = documentImages[label];
+      if (file) {
+        formData.append(key, {
+          uri: file.uri,
+          name: file.name,
+          type: file.type,
+        } as any);
+      }
+    });
+
+    return formData;
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    setReviewModalVisible(false);
+
+    try {
+      const formData = createFormData();
+
+      const response = await axios.post(
+        "https://your-api-url.com/submit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        Alert.alert(
+          "Success",
+          "Your application has been submitted successfully. You will receive a confirmation email shortly.",
+          [{ text: "OK" }]
+        );
+      } else {
+        Alert.alert("Error", "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      Alert.alert(
+        "Error",
+        "Failed to submit your application. Please try again."
+      );
+    }
   };
 
   return (

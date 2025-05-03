@@ -164,6 +164,28 @@ export default function AppLayout() {
           }}
         />
         <Drawer.Screen
+          name="commision-history"
+          options={{
+            drawerLabel: "Commission History",
+            title: "Commission History",
+            drawerIcon: ({ color, size }) => (
+              <AntDesign name="addusergroup" color={color} size={size} />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="transaction-history"
+          options={{
+            drawerLabel: "Transaction History",
+            title: "Transaction History",
+            drawerIcon: ({ color, size }) => (
+              <AntDesign name="addusergroup" color={color} size={size} />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
           name="test"
           options={{
             drawerLabel: "Test",
