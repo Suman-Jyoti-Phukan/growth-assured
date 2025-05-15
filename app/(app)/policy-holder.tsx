@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -27,8 +27,13 @@ import { DocumentsPhase } from "@/components/policy-holder/DocumentPhrase";
 import { ImagePreviewModal } from "@/components/policy-holder/ImagePreviewModal";
 
 import { ReviewModal } from "@/components/policy-holder/ReviewModal";
+
 import axios from "axios";
+
 import { ROOT_URL } from "@/utils/routes";
+
+import { router } from "expo-router";
+import SkeletonLoader from "@/components/skeleton-loader";
 
 type Colors = {
   primary: string;
@@ -129,12 +134,23 @@ export interface DocumentUpload {
   type: string;
 }
 
+/** SUMAN -> SUB CATEGORY LIST NOT PROVIDED BY ABHILASH .
+ *  WARNING ::: REMINDER YOU HAVE TO MAP THE CATEGORY NAME WITH THE ID RELATED WITH THE CATEGORY, NOW YOU JUST ADDING THE NAME
+ *  WARNING ::: VALUES ARE STATIC NOW FOR CATEGORY AND SUB CATEGORY
+ *
+ *
+ */
 export default function PolicyHolderScreen() {
+  const [policyCategoryList, setPolicyCategoryList] = useState();
+
+  const [isPolicyCategoryListLoading, setIsPolicyCategoryListLoading] =
+    useState(false);
+
+  console.log(policyCategoryList);
+
   const [currentPhase, setCurrentPhase] = useState<number>(0);
 
   const [formValues, setFormValues] = useState<Record<string, string>>({});
-
-  console.log(formValues);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
@@ -147,8 +163,6 @@ export default function PolicyHolderScreen() {
   const [documentVerification, setDocumentVerification] = useState<
     Record<string, boolean | undefined>
   >({});
-
-  console.log(documentImages);
 
   const [categoryModalVisible, setCategoryModalVisible] =
     useState<boolean>(false);
@@ -168,6 +182,34 @@ export default function PolicyHolderScreen() {
   const availableSubcategories: string[] = selectedCategory
     ? policySubcategories[selectedCategory] || []
     : [];
+
+  useEffect(() => {
+    async function getCategoryList() {
+      try {
+        setIsPolicyCategoryListLoading(true);
+
+        const response = await axios.get(`${ROOT_URL}/employee/category`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer 4|2ZuuUXpr8Ob9l9zz086Ui8egNLFsxQPcwgPFluHE9d2fcd39`,
+          },
+        });
+
+        const data = response.data.data;
+        setPolicyCategoryList(data);
+      } catch (err) {
+        console.error("Failed to fetch category list:", err);
+      } finally {
+        setIsPolicyCategoryListLoading(false);
+      }
+    }
+
+    getCategoryList();
+  }, []);
+
+  if (isPolicyCategoryListLoading) {
+    return <SkeletonLoader />;
+  }
 
   const requiredPersonalFields: string[] = [
     "Name",
@@ -194,8 +236,6 @@ export default function PolicyHolderScreen() {
 
     return true;
   };
-
-  console.log(isPersonalDetailsComplete(), isPolicyInfoComplete());
 
   const areAllDocumentsUploaded = (): boolean =>
     Object.keys(documentIcons).every((doc) => documentImages[doc]);
@@ -383,6 +423,8 @@ export default function PolicyHolderScreen() {
           "Your application has been submitted successfully. You will receive a confirmation email shortly.",
           [{ text: "OK" }]
         );
+
+        return router.push("/");
       } else {
         Alert.alert("Error", "Something went wrong. Please try again.");
       }
@@ -519,14 +561,14 @@ export default function PolicyHolderScreen() {
         visible={categoryModalVisible}
         onClose={() => setCategoryModalVisible(false)}
         title="Select Policy Category"
-        options={policyCategories}
+        options={policyCategoryList as any}
         onSelect={setSelectedCategory}
       />
       <SelectionModal
         visible={subcategoryModalVisible}
         onClose={() => setSubcategoryModalVisible(false)}
         title="Select Policy Subcategory"
-        options={availableSubcategories}
+        options={availableSubcategories as any}
         onSelect={setSelectedSubcategory}
       />
       <ImagePreviewModal

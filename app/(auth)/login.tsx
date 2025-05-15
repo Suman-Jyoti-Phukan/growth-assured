@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -16,7 +18,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   const [password, setPassword] = useState("");
 
@@ -24,16 +26,37 @@ export default function Login() {
 
   const [error, setError] = useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { login } = useAuth();
 
   const router = useRouter();
 
   const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError("Email and password are required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
     try {
-      await login(username, password);
+      await login(email, password);
       router.replace("/(app)");
     } catch (err) {
-      setError("Invalid credentials");
+      console.error(err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Login failed. Please check your credentials."
+      );
+      Alert.alert(
+        "Login Failed",
+        "Invalid email or password. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -45,44 +68,61 @@ export default function Login() {
     <View style={styles.container}>
       <Image
         source={require("../../assets/images/logo.png")}
-        style={{ width: 200, height: 200, marginBottom: 20 }}
+        style={styles.logo}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Sign In</Text>
+        <Text style={styles.subtitle}>Please sign in to continue</Text>
 
-      <View style={styles.passwordContainer}>
         <TextInput
-          style={styles.passwordInput}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
+          style={styles.input}
+          placeholder="Email Address"
+          value={email}
+          onChangeText={setEmail}
           autoCapitalize="none"
+          keyboardType="email-address"
         />
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Ionicons
-            name={showPassword ? "eye-off" : "eye"}
-            size={22}
-            color="#666"
+
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
           />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color="#666"
+            />
+          </TouchableOpacity>
+        </View>
+
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <TouchableOpacity
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.registerButton}
+          onPress={handleRegister}
+        >
+          <Text style={styles.registerButtonText}>Register</Text>
         </TouchableOpacity>
       </View>
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerButtonText}>Register</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -95,23 +135,53 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+    resizeMode: "contain",
+  },
+  formContainer: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 8,
+    color: "#333",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 24,
+  },
   input: {
     width: "100%",
     padding: 15,
     marginBottom: 15,
     borderRadius: 10,
-    backgroundColor: "#fff",
-    elevation: 3,
+    backgroundColor: "#f9f9f9",
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
     paddingHorizontal: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "#f9f9f9",
     borderRadius: 10,
-    elevation: 3,
-    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    marginBottom: 20,
   },
   passwordInput: {
     flex: 1,
@@ -123,7 +193,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 15,
+  },
+  buttonDisabled: {
+    backgroundColor: "#89BEFF",
   },
   buttonText: {
     color: "#fff",
@@ -145,5 +218,6 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     marginBottom: 15,
+    textAlign: "center",
   },
 });

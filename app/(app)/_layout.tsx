@@ -19,7 +19,9 @@ import { useAuth } from "@/context/AuthContext";
 import SkeletonLoader from "@/components/skeleton-loader";
 
 export default function AppLayout() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, userData } = useAuth();
+
+  console.log("User Data", userData);
 
   const router = useRouter();
 
@@ -157,6 +159,7 @@ export default function AppLayout() {
           name="regional-manager"
           options={{
             drawerLabel: "Regional Manager",
+            drawerStatusBarAnimation: "slide",
             title: "Regional Manager",
             drawerIcon: ({ color, size }) => (
               <AntDesign name="addusergroup" color={color} size={size} />

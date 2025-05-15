@@ -4,33 +4,37 @@ import React from "react";
 
 export default function _layout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        animation: "slide_from_right",
+      }}
+    >
       <Stack.Screen
         name="branch-manager"
-        options={{ title: "Branch Manager", animation: "fade" }}
+        options={{ title: "Branch Manager", animation: "slide_from_right" }}
       />
       <Stack.Screen
         name="sale-manager"
-        options={{ title: "Sale Manager", animation: "fade" }}
+        options={{ title: "Sale Manager", animation: "slide_from_right" }}
       />
       <Stack.Screen
         name="financial-planner"
-        options={{ title: "Financial Planner", animation: "fade" }}
+        options={{ title: "Financial Planner", animation: "slide_from_right" }}
       />
       <Stack.Screen
         name="login-report"
         options={{
           title: "Login Report",
-          animation: "fade",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="dsr-report"
-        options={{ title: "Daily Sales Report", animation: "fade" }}
+        options={{ title: "Daily Sales Report", animation: "slide_from_right" }}
       />
       <Stack.Screen
         name="[employee-details]"
-        options={{ title: "Employee Details", animation: "fade" }}
+        options={{ title: "Employee Details", animation: "slide_from_right" }}
       />
     </Stack>
   );

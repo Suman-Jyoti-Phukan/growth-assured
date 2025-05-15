@@ -2,11 +2,46 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 
 import * as SecureStore from "expo-secure-store";
 
+import axios from "axios";
+
+import { ROOT_URL } from "@/utils/routes";
+
+interface Employee {
+  id: number;
+  unique_code: string;
+  name: string;
+  mobile: string;
+  email: string;
+  type: string;
+}
+
+interface AuthData {
+  employee: Employee;
+  regional_managers: Employee[];
+  area_sales_managers: Employee[];
+  branch_managers: Employee[];
+  sales_managers: Employee[];
+  agents: Employee[];
+}
+
+interface AuthResponse {
+  status: boolean;
+  message: string;
+  access_token: string;
+  error_code: boolean | null;
+  error_message: string | null;
+  data: AuthData;
+  policies_amount: number;
+  dsr_count: number;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  userData: AuthData | null;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
+  accessToken: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -14,15 +49,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [userData, setUserData] = useState<AuthData | null>(null);
+
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const token = await SecureStore.getItemAsync("authToken");
-        setIsAuthenticated(!!token);
+        const storedUserData = await SecureStore.getItemAsync("userData");
+
+        if (token) {
+          setAccessToken(token);
+          setIsAuthenticated(true);
+
+          if (storedUserData) {
+            setUserData(JSON.parse(storedUserData));
+          }
+        }
       } catch (error) {
         console.error("Auth check failed:", error);
       } finally {
@@ -32,22 +80,66 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     checkAuth();
   }, []);
 
-  const login = async (username: string, password: string) => {
-    if (username === "test" && password === "password123") {
-      await SecureStore.setItemAsync("authToken", "dummy-token");
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await axios.post(`${ROOT_URL}/login`, {
+        email,
+        password,
+      });
+
+      if (!response.status || !response.data) {
+        throw new Error(response.data?.message || "Login failed");
+      }
+
+      const data = response.data;
+
+      console.log("data", data);
+
+      await SecureStore.setItemAsync("authToken", data.access_token);
+
+      await SecureStore.setItemAsync("userData", JSON.stringify(data.data));
+
+      setAccessToken(data.access_token);
+
+      setUserData(data.data);
+
       setIsAuthenticated(true);
-    } else {
-      throw new Error("Invalid credentials");
+
+      return;
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
     }
   };
 
+  // SUMAN : CLEAR THE ASYNC STORAGE AND RESET THE STATES
   const logout = async () => {
-    await SecureStore.deleteItemAsync("authToken");
-    setIsAuthenticated(false);
+    try {
+      await SecureStore.deleteItemAsync("authToken");
+
+      await SecureStore.deleteItemAsync("userData");
+
+      setIsAuthenticated(false);
+
+      setUserData(null);
+
+      setAccessToken(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        login,
+        logout,
+        isLoading,
+        userData,
+        accessToken,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

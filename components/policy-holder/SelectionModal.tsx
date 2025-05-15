@@ -17,7 +17,7 @@ interface SelectionModalProps {
   visible: boolean;
   onClose: () => void;
   title: string;
-  options: string[];
+  options: { name: string; id: string }[];
   onSelect: (option: string) => void;
 }
 
@@ -49,17 +49,19 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
           style={selectionModalStyles.optionsList}
           showsVerticalScrollIndicator={false}
         >
-          {options.map((option, index) => (
+          {options?.map((option, index) => (
             <TouchableOpacity
               key={index}
               style={selectionModalStyles.optionItem}
               onPress={() => {
-                onSelect(option);
+                onSelect(option.name || option);
                 onClose();
               }}
               activeOpacity={0.7}
             >
-              <Text style={selectionModalStyles.optionText}>{option}</Text>
+              <Text style={selectionModalStyles.optionText}>
+                {option.name || option}
+              </Text>
               <FontAwesome
                 name="chevron-right"
                 size={14}
