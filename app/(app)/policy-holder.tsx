@@ -28,6 +28,7 @@ import { ImagePreviewModal } from "@/components/policy-holder/ImagePreviewModal"
 
 import { ReviewModal } from "@/components/policy-holder/ReviewModal";
 import axios from "axios";
+import { ROOT_URL } from "@/utils/routes";
 
 type Colors = {
   primary: string;
@@ -309,26 +310,27 @@ export default function PolicyHolderScreen() {
 
     const formData = new FormData();
 
-    formData.append("catergory_id", "2");
+    formData.append("category_id", "1");
 
-    formData.append("sub_category_id", "2");
+    formData.append("sub_category_id", "1");
 
     Object.entries({
       mobile: formValues["Phone No."],
       name: formValues["Name"],
       dob: formValues["DOB"],
       email: formValues["E-Mail Id"],
-      id_marK: formValues["Identification mark"],
+      id_mark: formValues["Identification mark"],
       f_name: formValues["Father's Name"],
       m_name: formValues["Mother's Name"],
       address: formValues["Address as per Proof"],
       landmark: formValues["Landmark"],
       height: formValues["Height"],
+      weight: formValues["Weight"],
       birth_place: formValues["Place of Birth"],
       qualification: formValues["Education Qualification"],
       nominee_name: formValues["Nominee Name"],
       nominee_dob: formValues["Nominee DOB"],
-      nominee_relation: formValues["Relationship"],
+      nominee_relationship: formValues["Relationship"],
       work_org: formValues["Name of Organisation"],
       work_org_type: formValues["Type of Organisation"],
       designation: formValues["Designation"],
@@ -361,14 +363,19 @@ export default function PolicyHolderScreen() {
       const formData = createFormData();
 
       const response = await axios.post(
-        "https://your-api-url.com/submit",
+        `${ROOT_URL}/employee/client/add/policy`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer 4|2ZuuUXpr8Ob9l9zz086Ui8egNLFsxQPcwgPFluHE9d2fcd39`,
           },
         }
       );
+
+      if (!response.data.data) {
+        throw new Error("Error Fetching data.");
+      }
 
       if (response.status === 200) {
         Alert.alert(

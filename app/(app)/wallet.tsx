@@ -1,276 +1,421 @@
-import React from "react";
-
+import React, { useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
-  FlatList,
   StyleSheet,
+  FlatList,
+  TouchableOpacity,
   SafeAreaView,
   StatusBar,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
-import { themeColors } from "@/utils/colors";
+// Define transaction type
+type TransactionType = "credit" | "debit";
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+interface Transaction {
+  id: string;
+  date: string;
+  amount: number;
+  type: TransactionType;
+  policy: string;
+}
 
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+// Define grouped transaction type
+interface GroupedTransactions {
+  date: string;
+  data: Transaction[];
+}
 
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+// Define filter type
+type FilterType = "all" | "credit" | "debit";
 
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+const Wallet: React.FC = () => {
+  // Transaction data focused only on policy credits and debits
+  const transactionData: Transaction[] = [
+    {
+      id: "1",
+      date: "01 May 2025",
+      amount: 5200,
+      type: "credit",
+      policy: "RF8276",
+    },
+    {
+      id: "2",
+      date: "29 Apr 2025",
+      amount: 2000,
+      type: "credit",
+      policy: "LI9378",
+    },
+    {
+      id: "3",
+      date: "28 Apr 2025",
+      amount: -250,
+      type: "debit",
+      policy: "HI6432",
+    },
+    {
+      id: "4",
+      date: "25 Apr 2025",
+      amount: 3800,
+      type: "credit",
+      policy: "HI6723",
+    },
+    {
+      id: "5",
+      date: "20 Apr 2025",
+      amount: -1500,
+      type: "debit",
+      policy: "LI2245",
+    },
+    {
+      id: "6",
+      date: "15 Apr 2025",
+      amount: 9200,
+      type: "credit",
+      policy: "MF4421",
+    },
+    {
+      id: "7",
+      date: "12 Apr 2025",
+      amount: -2800,
+      type: "debit",
+      policy: "HI6701",
+    },
+    {
+      id: "8",
+      date: "05 Apr 2025",
+      amount: 6700,
+      type: "credit",
+      policy: "LI3358",
+    },
+  ];
 
-const withdrawals = [
-  { id: "1", amount: "₹100", date: "2025-01-10", status: "Completed" },
-  { id: "2", amount: "₹50", date: "2025-01-15", status: "Pending" },
-  { id: "3", amount: "₹200", date: "2025-01-20", status: "Completed" },
-];
+  // Filter state
+  const [filter, setFilter] = useState<FilterType>("all");
 
-const Wallet = () => {
-  const { primary, secondary, background, lightTheme } = themeColors;
+  // Filter the data
+  const filteredData =
+    filter === "all"
+      ? [...transactionData]
+      : transactionData.filter((item) => item.type === filter);
 
-  const getStatusColor = (status) => {
-    return status === "Completed" ? themeColors.coldLead : themeColors.warmLead;
-  };
+  // Sort by most recent date first
+  const sortedData = [...filteredData].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <Text style={styles.headerTitle}>My Wallet</Text>
-    </View>
+  // Group transactions by date
+  const groupedTransactions: Record<string, Transaction[]> = sortedData.reduce(
+    (groups: Record<string, Transaction[]>, transaction: Transaction) => {
+      const date = transaction.date;
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(transaction);
+      return groups;
+    },
+    {}
   );
 
-  const renderBalanceCard = () => (
-    <View style={styles.balanceCard}>
-      <View style={styles.balanceCardContent}>
-        <Text style={styles.balanceLabel}>Current Balance</Text>
-        <Text style={styles.balanceAmount}>₹500</Text>
-        <TouchableOpacity
-          style={[styles.withdrawButton, { backgroundColor: primary }]}
-          activeOpacity={0.8}
-        >
-          <MaterialCommunityIcons
-            name="wallet-outline"
-            size={20}
-            color="#FFF"
-          />
-          <Text style={styles.withdrawButtonText}>Withdraw Funds</Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={[styles.balanceDecoration, { backgroundColor: secondary }]}
-      />
-    </View>
+  // Convert grouped transactions to array format for FlatList
+  const groupedTransactionsArray: GroupedTransactions[] = Object.keys(
+    groupedTransactions
+  ).map((date) => ({
+    date,
+    data: groupedTransactions[date],
+  }));
+
+  // Calculate total balance
+  const totalBalance = transactionData.reduce(
+    (sum, item) => sum + item.amount,
+    0
   );
 
-  const renderItem = ({ item }) => (
-    <View style={styles.listItem}>
-      <View style={styles.listItemLeftBorder} />
-      <View style={styles.listItemContent}>
-        <View style={styles.listItemHeader}>
-          <View style={styles.listItemAmount}>
-            <Text style={styles.listItemAmountText}>{item.amount}</Text>
-          </View>
+  // Render each transaction item
+  const renderTransactionItem = ({ item }: { item: Transaction }) => {
+    return (
+      <View style={styles.transactionCard}>
+        <View style={styles.policyContainer}>
           <View
             style={[
-              styles.statusBadge,
-              { backgroundColor: getStatusColor(item.status) },
+              styles.iconCircle,
+              item.type === "credit" ? styles.creditCircle : styles.debitCircle,
             ]}
           >
-            <Text style={styles.statusText}>{item.status}</Text>
-          </View>
-        </View>
-
-        <View style={styles.listItemDetails}>
-          <View style={styles.detailRow}>
-            <MaterialIcons name="date-range" size={16} color={primary} />
-            <Text style={styles.detailText}>{item.date}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <MaterialCommunityIcons
+            <Feather
               name={
-                item.status === "Completed" ? "check-circle" : "clock-outline"
+                item.type === "credit" ? "arrow-down-left" : "arrow-up-right"
               }
               size={16}
-              color={getStatusColor(item.status)}
+              color="#fff"
             />
-            <Text
-              style={[
-                styles.detailText,
-                { color: getStatusColor(item.status) },
-              ]}
-            >
-              {item.status}
-            </Text>
           </View>
+          <Text style={styles.policyText}>{item.policy}</Text>
         </View>
+        <Text
+          style={[
+            styles.amountText,
+            item.type === "credit" ? styles.creditAmount : styles.debitAmount,
+          ]}
+        >
+          {item.type === "credit" ? "+" : ""}₹
+          {Math.abs(item.amount).toLocaleString("en-IN")}
+        </Text>
       </View>
+    );
+  };
+
+  // Render date section header
+  const renderDateHeader = (date: string) => (
+    <Text style={styles.dateHeaderText}>{date}</Text>
+  );
+
+  // Render transactions group
+  const renderTransactionGroup = ({ item }: { item: GroupedTransactions }) => (
+    <View style={styles.dateGroup}>
+      {renderDateHeader(item.date)}
+      {item.data.map((transaction) => (
+        <View key={transaction.id}>
+          {renderTransactionItem({ item: transaction })}
+        </View>
+      ))}
     </View>
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: background }]}>
-      <StatusBar backgroundColor={background} barStyle="dark-content" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-      {renderHeader()}
-      {renderBalanceCard()}
+      <View style={styles.mainContainer}>
+        {/* Balance Card */}
+        <View style={styles.balanceCard}>
+          <Text style={styles.headerTitle}>Wallet</Text>
+          <Text style={styles.balanceText}>
+            ₹{totalBalance.toLocaleString("en-IN")}
+          </Text>
+          <Text style={styles.balanceSubtext}>Total Balance</Text>
+        </View>
 
-      <View style={styles.historyContainer}>
-        <Text style={styles.historyTitle}>Transaction History</Text>
+        {/* Content Container */}
+        <View style={styles.contentContainer}>
+          {/* Filter Options */}
+          <View style={styles.filterContainer}>
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filter === "all" && styles.activeFilter,
+              ]}
+              onPress={() => setFilter("all")}
+            >
+              <Feather
+                name="layers"
+                size={16}
+                color={filter === "all" ? "#fff" : "#64748b"}
+              />
+              <Text
+                style={[
+                  styles.filterText,
+                  filter === "all" && styles.activeFilterText,
+                ]}
+              >
+                All
+              </Text>
+            </TouchableOpacity>
 
-        <FlatList
-          data={withdrawals}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No transactions yet</Text>
-          }
-        />
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filter === "credit" && styles.activeFilter,
+              ]}
+              onPress={() => setFilter("credit")}
+            >
+              <Feather
+                name="arrow-down-left"
+                size={16}
+                color={filter === "credit" ? "#fff" : "#64748b"}
+              />
+              <Text
+                style={[
+                  styles.filterText,
+                  filter === "credit" && styles.activeFilterText,
+                ]}
+              >
+                Credits
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.filterButton,
+                filter === "debit" && styles.activeFilter,
+              ]}
+              onPress={() => setFilter("debit")}
+            >
+              <Feather
+                name="arrow-up-right"
+                size={16}
+                color={filter === "debit" ? "#fff" : "#64748b"}
+              />
+              <Text
+                style={[
+                  styles.filterText,
+                  filter === "debit" && styles.activeFilterText,
+                ]}
+              >
+                Debits
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Transactions List */}
+          <FlatList
+            data={groupedTransactionsArray}
+            renderItem={renderTransactionGroup}
+            keyExtractor={(item) => item.date}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
+export default Wallet;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#f8fafc",
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  headerTitle: {
-    fontSize: responsiveFontSize(2.5),
-    fontWeight: "700",
-    color: themeColors.primary,
+  mainContainer: {
+    flex: 1,
+    padding: 16,
   },
   balanceCard: {
-    marginHorizontal: 20,
+    padding: 24,
+    backgroundColor: "#ffffff",
     borderRadius: 16,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    overflow: "hidden",
-    position: "relative",
-  },
-  balanceCardContent: {
-    padding: 20,
-  },
-  balanceDecoration: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: 8,
-    height: "100%",
-  },
-  balanceLabel: {
-    fontSize: responsiveFontSize(1.8),
-    color: "#666",
-    marginBottom: 8,
-  },
-  balanceAmount: {
-    fontSize: responsiveFontSize(3.2),
-    fontWeight: "700",
-    color: themeColors.primary,
-    marginBottom: 20,
-  },
-  withdrawButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  withdrawButtonText: {
-    color: "#fff",
-    fontSize: responsiveFontSize(1.8),
-    fontWeight: "600",
-    marginLeft: 8,
-  },
-  historyContainer: {
-    flex: 1,
-    marginTop: 30,
-    paddingHorizontal: 20,
-  },
-  historyTitle: {
-    fontSize: responsiveFontSize(2.2),
-    fontWeight: "700",
-    color: themeColors.primary,
-    marginBottom: 15,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  listItem: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    marginBottom: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    overflow: "hidden",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+    marginBottom: 16,
   },
-  listItemLeftBorder: {
-    width: 5,
-    height: "100%",
-    backgroundColor: themeColors.primary,
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#64748b",
+    marginBottom: 12,
   },
-  listItemContent: {
+  balanceText: {
+    fontSize: 32,
+    fontWeight: "700",
+    color: "#0f172a",
+    marginBottom: 4,
+  },
+  balanceSubtext: {
+    fontSize: 14,
+    color: "#64748b",
+  },
+  contentContainer: {
     flex: 1,
-    padding: 15,
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  listItemHeader: {
+  filterContainer: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  filterButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "#f1f5f9",
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  activeFilter: {
+    backgroundColor: "#3b82f6",
+  },
+  filterText: {
+    color: "#64748b",
+    fontSize: 14,
+    fontWeight: "500",
+    marginLeft: 6,
+  },
+  activeFilterText: {
+    color: "#ffffff",
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
+  dateGroup: {
+    marginBottom: 16,
+  },
+  dateHeaderText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748b",
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  transactionCard: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    marginBottom: 8,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
+    borderWidth: 1,
+    borderColor: "#f1f5f9",
   },
-  listItemAmount: {
+  policyContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  listItemAmountText: {
-    fontSize: responsiveFontSize(2.2),
-    fontWeight: "700",
-    color: themeColors.primary,
+  iconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
   },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+  creditCircle: {
+    backgroundColor: "#10b981",
   },
-  statusText: {
-    fontSize: responsiveFontSize(1.6),
+  debitCircle: {
+    backgroundColor: "#ef4444",
+  },
+  policyText: {
+    fontSize: 16,
     fontWeight: "600",
-    color: "#fff",
+    color: "#0f172a",
   },
-  listItemDetails: {
-    marginTop: 5,
+  amountText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
-  detailRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
+  creditAmount: {
+    color: "#10b981",
   },
-  detailText: {
-    fontSize: responsiveFontSize(1.7),
-    color: "#666",
-    marginLeft: 8,
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 40,
-    color: "#999",
-    fontSize: responsiveFontSize(1.8),
+  debitAmount: {
+    color: "#ef4444",
   },
 });
-
-export default Wallet;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -11,8 +12,11 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+
 import { responsiveFontSize } from "react-native-responsive-dimensions";
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+
 import axios from "axios";
 
 const ROOT_URL =
@@ -135,19 +139,19 @@ export default function DailyReportScreen() {
 
   const [formValues, setFormValues] = useState<{
     name: string;
-    phone: string;
+    mobile: string;
     remark: string;
     occupation: string;
   }>({
     name: "",
-    phone: "",
+    mobile: "",
     remark: "",
     occupation: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async () => {
-    if (!formValues.name.trim() || !formValues.phone.trim()) {
+    if (!formValues.name.trim() || !formValues.mobile.trim()) {
       Alert.alert("Validation Error", "Name and Phone are required fields.");
       return;
     }
@@ -163,7 +167,7 @@ export default function DailyReportScreen() {
 
       if (response.status >= 200 && response.status < 300) {
         Alert.alert("Success", "Report submitted successfully!");
-        setFormValues({ name: "", phone: "", remark: "", occupation: "" });
+        setFormValues({ name: "", mobile: "", remark: "", occupation: "" });
       } else {
         throw new Error("Unexpected response from server");
       }
@@ -213,9 +217,9 @@ export default function DailyReportScreen() {
             }
           />
           <PhoneField
-            value={formValues.phone}
+            value={formValues.mobile}
             onChangeText={(text) =>
-              setFormValues({ ...formValues, phone: text })
+              setFormValues({ ...formValues, mobile: text })
             }
           />
           <RemarkField
