@@ -9,7 +9,7 @@ import {
 
 import React, { useEffect, useState } from "react";
 
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 
 import axios from "axios";
 
@@ -76,7 +76,12 @@ export default function BranchManager() {
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
             e.stopPropagation();
-            navigation.navigate("/(hierarchy)/sale-manager" as never);
+            router.push({
+              pathname: "/(hierarchy)/sale-manager" as never,
+              params: {
+                parentId: item.id,
+              },
+            });
           }}
         >
           <Text style={styles.buttonText}>View Details</Text>

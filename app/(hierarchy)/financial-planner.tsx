@@ -1,11 +1,23 @@
-import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { organization } from "@/utils/fakeData";
+import { router, useLocalSearchParams } from "expo-router";
 
-import { router } from "expo-router";
 import { themeColors } from "@/utils/colors";
+
+import axios from "axios";
+
+import { ROOT_URL } from "@/utils/routes";
+
+import { useAuth } from "@/context/AuthContext";
 
 interface FinancialPlanner {
   name: string;
@@ -19,13 +31,45 @@ interface FinancialPlanner {
   policiesSold: { clientName: string; amount: number }[];
 }
 
-export default function FinancialPlanner() {
-  const financialPlanners: FinancialPlanner[] =
-    organization.areaSalesManagers.flatMap((asm) =>
-      asm.branchManagers.flatMap((bm) =>
-        bm.salesManagers.flatMap((sm) => sm.financialPlanners || [])
-      )
-    );
+export default function FinancialPlannerScreen() {
+  const [financialPlanners, setFinancialPlanners] = useState<
+    FinancialPlanner[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const [error, setError] = useState("");
+
+  console.log(error);
+
+  const { parentId } = useLocalSearchParams();
+
+  const { accessToken } = useAuth();
+
+  useEffect(() => {
+    async function fetchSalesManagers() {
+      try {
+        const response = await axios.post(
+          `${ROOT_URL}/employee/fetchEmployee`,
+          { employee_id: parentId },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        setFinancialPlanners(response.data.data || []);
+      } catch (err: any) {
+        console.log("Server error:", err);
+        setError("Failed to load data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSalesManagers();
+  }, [parentId]);
 
   const renderPlannerCard = ({ item }: { item: FinancialPlanner }) => (
     <View style={styles.card}>
@@ -57,6 +101,19 @@ export default function FinancialPlanner() {
       </View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size="large" color={themeColors.primary} />
+      </View>
+    );
+  }
 
   return (
     <FlatList
