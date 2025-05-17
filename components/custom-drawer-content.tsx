@@ -10,11 +10,14 @@ export default function CustomDrawerContent(props: any) {
     <DrawerContentScrollView {...props}>
       <View style={styles.profileContainer}>
         <Image
-          source={require("../assets/images/avatar.png")}
+          // source={require("../assets/images/avatar.png")}
+          source={{
+            uri: "https://pyxis.nymag.com/v1/imgs/921/a6c/02701db80f6372550a9bb07317d1987cd2-season-1.rhorizontal.w700.jpg",
+          }}
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>Ser Criston Cole</Text>
-        <Text style={styles.profileEmail}>Knight</Text>
+        <Text style={styles.profileName}>Knight Jammie Lannister</Text>
+        <Text style={styles.profileEmail}>King Slayer</Text>
       </View>
       <View style={styles.separator} />
       {/* <RoleHeirarchy /> */}

@@ -8,8 +8,12 @@ import { themeColors } from "@/utils/colors";
 
 import { router } from "expo-router";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function Heirarchy() {
-  const navigation = useNavigation();
+  const { userData, accessToken } = useAuth();
+
+  console.log("Access Token", accessToken, "User Data", userData);
 
   return (
     <View style={styles.container}>
@@ -42,7 +46,7 @@ export default function Heirarchy() {
               ]}
               onPress={(e) => {
                 e.stopPropagation();
-                navigation.navigate("(hierarchy)" as never);
+                router.push("/(hierarchy)/branch-manager" as never);
               }}
             >
               <Text style={styles.buttonText}>View Details</Text>

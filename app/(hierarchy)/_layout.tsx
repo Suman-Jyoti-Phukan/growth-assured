@@ -1,8 +1,14 @@
+import { useAuth } from "@/context/AuthContext";
+
 import { Stack } from "expo-router";
 
 import React from "react";
 
 export default function _layout() {
+  const { userData } = useAuth();
+
+  console.log("User Data Type", userData?.employee.type);
+
   return (
     <Stack
       screenOptions={{
