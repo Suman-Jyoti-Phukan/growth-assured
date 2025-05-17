@@ -1,45 +1,77 @@
-import { View, Text, Pressable, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { organization } from "@/utils/fakeData";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
-import { useRouter } from "expo-router";
+import axios from "axios";
 
-import { router } from "expo-router";
+import { ROOT_URL } from "@/utils/routes";
+
+import { useAuth } from "@/context/AuthContext";
 
 import { themeColors } from "@/utils/colors";
 
-interface IBranchManager {
-  name: string;
-  role: string;
-  dsr: {
-    date: string;
-    totalCalls: number;
-    meetings: number;
-    amount: number;
-  };
-  policiesSold: { clientName: string; amount: number }[];
-}
+import SkeletonLoader from "@/components/skeleton-loader";
 
 export default function BranchManager() {
   const navigation = useRouter();
 
-  const branchManagers = organization.areaSalesManagers.flatMap(
-    (asm) => asm.branchManagers
-  );
+  const { parentId } = useLocalSearchParams();
 
-  const renderPlannerCard = ({ item }: { item: IBranchManager }) => (
+  const { accessToken } = useAuth();
+
+  const [branchManagers, setBranchManagers] = useState<IBaseEmployeeType[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchBranchManagers() {
+      try {
+        setLoading(true);
+        const response = await axios.post(
+          `${ROOT_URL}/employee/fetchEmployee`,
+          { employee_id: parentId },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        setBranchManagers(response.data?.data || []);
+
+        setError(null);
+      } catch (err) {
+        console.log("Server Error", err);
+
+        setError("Failed to load branch managers");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchBranchManagers();
+  }, [parentId]);
+
+  const renderPlannerCard = ({ item }: { item: IBaseEmployeeType }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-
-      <Text style={styles.role}>{item.role}</Text>
-
+      <Text style={styles.role}>Branch Manager</Text>
       <Text style={styles.contact}>📞 +91 98765 43210</Text>
-
       <Text style={styles.contact}>✉️ planner@example.com</Text>
 
-      <View style={{ flexDirection: "row", gap: 10 }}>
+      <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
         <Pressable
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
@@ -54,7 +86,7 @@ export default function BranchManager() {
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
             e.stopPropagation();
-            router.push("/(hierarchy)/login-report" as never);
+            navigation.push("/(hierarchy)/login-report" as never);
           }}
         >
           <Text style={styles.buttonText}>Login</Text>
@@ -64,7 +96,7 @@ export default function BranchManager() {
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
             e.stopPropagation();
-            router.push("/(hierarchy)/dsr-report" as never);
+            navigation.push("/(hierarchy)/dsr-report" as never);
           }}
         >
           <Text style={styles.buttonText}>DSR Report</Text>
@@ -73,27 +105,47 @@ export default function BranchManager() {
     </View>
   );
 
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <SkeletonLoader />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: "red", fontSize: 16 }}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={branchManagers}
       keyExtractor={(item) => item.name}
       contentContainerStyle={styles.container}
       renderItem={renderPlannerCard}
+      ListEmptyComponent={
+        <View style={styles.center}>
+          <Text>No Branch Managers found.</Text>
+        </View>
+      }
     />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 12,
     backgroundColor: "#f2f4f7",
+    flexGrow: 1,
   },
-  screenTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#1f2937",
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   card: {
     backgroundColor: "#ffffff",
@@ -127,7 +179,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
-    alignSelf: "flex-start",
     marginTop: 12,
   },
   buttonText: {

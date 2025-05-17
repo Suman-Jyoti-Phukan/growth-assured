@@ -10,76 +10,61 @@ import { router } from "expo-router";
 
 import { useAuth } from "@/context/AuthContext";
 
-export default function Heirarchy() {
+export default function RegionalManager() {
   const { userData, accessToken } = useAuth();
-
-  console.log("Access Token", accessToken, "User Data", userData);
 
   return (
     <View style={styles.container}>
-      {organization.areaSalesManagers.map((asm) => (
-        <Pressable
-          key={asm.name}
-          style={styles.card}
-          // onPress={() => {
-          //   router.push({
-          //     pathname: "/(hierarchy)/employee-details",
-          //     params: {
-          //       data: JSON.stringify(asm),
-          //     },
-          //   });
-          // }}
-        >
-          <Text style={styles.name}>{asm.name}</Text>
+      <Pressable style={styles.card}>
+        <Text style={styles.name}>{userData?.employee.name}</Text>
 
-          <Text style={styles.role}>{asm.role}</Text>
+        <Text style={styles.role}>Regional Manager</Text>
 
-          <Text style={styles.contact}>📞 +91 98765 43210</Text>
+        <Text style={styles.contact}>{userData?.employee.mobile || "N/A"}</Text>
 
-          <Text style={styles.contact}>✉️ asm@example.com</Text>
+        <Text style={styles.contact}>✉️ {userData?.employee.email}</Text>
 
-          <View style={{ flexDirection: "row", gap: 10 }}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                pressed && { opacity: 0.9 },
-              ]}
-              onPress={(e) => {
-                e.stopPropagation();
-                router.push("/(hierarchy)/branch-manager" as never);
-              }}
-            >
-              <Text style={styles.buttonText}>View Details</Text>
-            </Pressable>
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/area-sales-manager" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>View Details</Text>
+          </Pressable>
 
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                pressed && { opacity: 0.9 },
-              ]}
-              onPress={(e) => {
-                e.stopPropagation();
-                router.push("/(hierarchy)/login-report" as never);
-              }}
-            >
-              <Text style={styles.buttonText}>Login</Text>
-            </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/login-report" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </Pressable>
 
-            <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                pressed && { opacity: 0.9 },
-              ]}
-              onPress={(e) => {
-                e.stopPropagation();
-                router.push("/(hierarchy)/dsr-report" as never);
-              }}
-            >
-              <Text style={styles.buttonText}>DSR Report</Text>
-            </Pressable>
-          </View>
-        </Pressable>
-      ))}
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/dsr-report" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>DSR Report</Text>
+          </Pressable>
+        </View>
+      </Pressable>
     </View>
   );
 }

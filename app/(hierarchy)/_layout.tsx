@@ -16,6 +16,10 @@ export default function _layout() {
       }}
     >
       <Stack.Screen
+        name="area-sales-manager"
+        options={{ title: "Area Sales Manager", animation: "slide_from_right" }}
+      />
+      <Stack.Screen
         name="branch-manager"
         options={{ title: "Branch Manager", animation: "slide_from_right" }}
       />

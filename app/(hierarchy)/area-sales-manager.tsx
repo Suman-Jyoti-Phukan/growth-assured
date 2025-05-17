@@ -10,41 +10,41 @@ import { router } from "expo-router";
 
 import { themeColors } from "@/utils/colors";
 
-interface IBranchManager {
+import { useAuth } from "@/context/AuthContext";
+
+interface IAreaSalesManager {
   name: string;
-  role: string;
-  dsr: {
-    date: string;
-    totalCalls: number;
-    meetings: number;
-    amount: number;
-  };
-  policiesSold: { clientName: string; amount: number }[];
+  mobile?: string | number;
+  email: string;
+  id: number;
 }
 
 export default function AreaSalesManager() {
   const navigation = useRouter();
 
-  const branchManagers = organization.areaSalesManagers.flatMap(
-    (asm) => asm.branchManagers
-  );
+  const { userData } = useAuth();
 
-  const renderPlannerCard = ({ item }: { item: IBranchManager }) => (
+  const renderPlannerCard = ({ item }: { item: IAreaSalesManager }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
 
-      <Text style={styles.role}>{item.role}</Text>
+      <Text style={styles.role}>Area Sales Manager</Text>
 
-      <Text style={styles.contact}>📞 +91 98765 43210</Text>
+      <Text style={styles.contact}>📞 {item.mobile}</Text>
 
-      <Text style={styles.contact}>✉️ planner@example.com</Text>
+      <Text style={styles.contact}>✉️ {item.email}</Text>
 
       <View style={{ flexDirection: "row", gap: 10 }}>
         <Pressable
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
             e.stopPropagation();
-            navigation.navigate("/(hierarchy)/branch-manager" as never);
+            router.push({
+              pathname: "/(hierarchy)/branch-manager" as never,
+              params: {
+                parentId: item.id,
+              },
+            });
           }}
         >
           <Text style={styles.buttonText}>View Details</Text>
@@ -75,7 +75,7 @@ export default function AreaSalesManager() {
 
   return (
     <FlatList
-      data={branchManagers}
+      data={userData?.area_sales_managers}
       keyExtractor={(item) => item.name}
       contentContainerStyle={styles.container}
       renderItem={renderPlannerCard}
