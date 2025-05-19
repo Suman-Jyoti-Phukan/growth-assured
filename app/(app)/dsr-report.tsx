@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -12,128 +12,126 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { themeColors } from "../../utils/colors";
 
+import { ROOT_URL } from "@/utils/routes";
+
+import axios from "axios";
+
+import { useAuth } from "@/context/AuthContext";
+
+import SkeletonLoader from "@/components/skeleton-loader";
+
 interface DsrData {
-  id: string;
-  clientName: string;
+  id: number;
+  client: string;
   date: string;
   time: string;
-  interestType: string;
-  estimatedValue: number;
+  category: string;
+  subCategory: string;
+  plan_amount: number | string;
   status: string;
-  contactInfo: string;
-  notes: string;
+  employee: string;
 }
-
-const FAKE_DSR_DATA = [
-  {
-    id: "1",
-    clientName: "Ramesh Gupta",
-    date: "2025-04-09",
-    time: "10:15 AM",
-    interestType: "Auto Insurance",
-    estimatedValue: 1_500,
-    status: "Hot Lead",
-    contactInfo: "+91 98765 43210",
-    notes: "Looking for comprehensive coverage for 2 vehicles",
-  },
-  {
-    id: "2",
-    clientName: "Priya Sharma",
-    date: "2025-04-09",
-    time: "01:30 PM",
-    interestType: "Home Insurance",
-    estimatedValue: 1_200,
-    status: "Warm Lead",
-    contactInfo: "+91 87654 32109",
-    notes: "Requested quote for new home purchase",
-  },
-  {
-    id: "3",
-    clientName: "Rajesh Patel",
-    date: "2025-04-08",
-    time: "11:45 AM",
-    interestType: "Business Insurance",
-    estimatedValue: 3_800,
-    status: "Hot Lead",
-    contactInfo: "+91 76543 21098",
-    notes: "Opening new restaurant, needs full coverage",
-  },
-  {
-    id: "4",
-    clientName: "Anjali Verma",
-    date: "2025-04-08",
-    time: "09:20 AM",
-    interestType: "Life Insurance",
-    estimatedValue: 2_200,
-    status: "Cold Lead",
-    contactInfo: "+91 65432 10987",
-    notes: "Requested information, price sensitive",
-  },
-  {
-    id: "5",
-    clientName: "Karan Singh",
-    date: "2025-04-07",
-    time: "03:40 PM",
-    interestType: "Health Insurance",
-    estimatedValue: 1_850,
-    status: "Warm Lead",
-    contactInfo: "+91 54321 09876",
-    notes: "Looking for family plan with dental coverage",
-  },
-  {
-    id: "6",
-    clientName: "Meera Iyer",
-    date: "2025-04-07",
-    time: "10:50 AM",
-    interestType: "Auto Insurance",
-    estimatedValue: 950,
-    status: "Hot Lead",
-    contactInfo: "+91 43210 98765",
-    notes: "Current policy expiring next month, comparing rates",
-  },
-  {
-    id: "7",
-    clientName: "Vikram Rao",
-    date: "2025-04-06",
-    time: "02:15 PM",
-    interestType: "Rental Insurance",
-    estimatedValue: 450,
-    status: "Warm Lead",
-    contactInfo: "+91 32109 87654",
-    notes: "Moving to new apartment, required by landlord",
-  },
-];
-
-const summaryStats = {
-  totalLeads: 36,
-  hotLeads: 14,
-  warmLeads: 17,
-  coldLeads: 5,
-  potentialValue: 65250,
-  conversionRate: 22.8,
-};
 
 export default function DsrReport() {
   const [activeTab, setActiveTab] = useState("all");
 
+  const { accessToken } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const [dsrReportList, setDsrReportList] = useState<DsrData[]>([]);
+
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const mapStatus = (status: string) => {
+    switch (status) {
+      case "1":
+        return "Hot Lead";
+      case "2":
+        return "Warm Lead";
+      case "3":
+        return "Cold Lead";
+      default:
+        return "Unknown";
+    }
+  };
+
+  useEffect(() => {
+    async function fetchDsrData() {
+      setIsLoading(true);
+      try {
+        const response = await axios.post(
+          `${ROOT_URL}/employee/client/fetch/policy`,
+          { employee_id: 11 },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        setDsrReportList(response.data.data || []);
+      } catch (err: any) {
+        console.log("Server error:", err);
+        setError("Failed to load data. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchDsrData();
+  }, []);
+
+  const summaryStats = {
+    totalLeads: dsrReportList.length,
+    hotLeads: dsrReportList.filter((item) => item.status === "1").length,
+    warmLeads: dsrReportList.filter((item) => item.status === "2").length,
+    coldLeads: dsrReportList.filter((item) => item.status === "3").length,
+
+    potentialValue: dsrReportList.reduce((sum, item) => {
+      const amount =
+        typeof item.plan_amount === "string"
+          ? parseFloat(item.plan_amount)
+          : item.plan_amount || 0;
+      return sum + amount;
+    }, 0),
+
+    conversionRate:
+      dsrReportList.length > 0
+        ? Math.round(
+            (dsrReportList.filter((item) => item.status === "1").length /
+              dsrReportList.length) *
+              100 *
+              10
+          ) / 10
+        : 0,
+  };
+
   const filteredData =
     activeTab === "all"
-      ? FAKE_DSR_DATA
-      : FAKE_DSR_DATA.filter((item) =>
+      ? dsrReportList
+      : dsrReportList.filter((item) =>
           activeTab === "hot"
-            ? item.status === "Hot Lead"
+            ? item.status === "1"
             : activeTab === "warm"
-            ? item.status === "Warm Lead"
-            : item.status === "Cold Lead"
+            ? item.status === "2"
+            : item.status === "3"
         );
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Hot Lead":
+      case "1":
         return "#ff6b6b";
-      case "Warm Lead":
+      case "2":
         return "#ffa06b";
-      case "Cold Lead":
+      case "3":
         return "#74c0fc";
       default:
         return "#6b76ff";
@@ -143,30 +141,28 @@ export default function DsrReport() {
   const renderItem = ({ item }: { item: DsrData }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
-        <Text style={styles.clientName}>{item.clientName}</Text>
+        <Text style={styles.clientName}>{item.client}</Text>
         <View
           style={[
             styles.statusBadge,
             { backgroundColor: getStatusColor(item.status) },
           ]}
         >
-          <Text style={styles.statusText}>{item.status}</Text>
+          <Text style={styles.statusText}>{mapStatus(item.status)}</Text>
         </View>
       </View>
 
       <View style={styles.cardContent}>
         <View style={styles.interestInfo}>
-          <Text style={styles.interestType}>{item.interestType}</Text>
-          <Text style={styles.contactInfo}>{item.contactInfo}</Text>
+          <Text style={styles.interestType}>{item.category}</Text>
+          <Text style={styles.subCategory}>{item.subCategory}</Text>
         </View>
         <Text style={[styles.amount, { color: themeColors.primary }]}>
-          ₹{item.estimatedValue.toLocaleString()}
+          ₹
+          {item.plan_amount
+            ? parseFloat(item.plan_amount.toString()).toLocaleString()
+            : "0"}
         </Text>
-      </View>
-
-      <View style={styles.notesContainer}>
-        <Text style={styles.notesLabel}>Notes:</Text>
-        <Text style={styles.notes}>{item.notes}</Text>
       </View>
 
       <View style={styles.cardFooter}>
@@ -178,22 +174,22 @@ export default function DsrReport() {
           <Icon name="clock-outline" size={14} color="#7d8597" />
           <Text style={styles.metaText}>{item.time}</Text>
         </View>
-        {/* <View style={styles.actions}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="phone" size={18} color={themeColors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="email-outline" size={18} color={themeColors.primary} />
-          </TouchableOpacity>
-        </View> */}
+        <View style={styles.employeeInfo}>
+          <Icon name="account" size={14} color="#7d8597" />
+          <Text style={styles.metaText}>{item.employee}</Text>
+        </View>
       </View>
     </View>
   );
 
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerDate}>April 9, 2025</Text>
+        <Text style={styles.headerDate}>{currentDate}</Text>
       </View>
 
       <View style={styles.summaryContainer}>
@@ -308,13 +304,28 @@ export default function DsrReport() {
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          data={filteredData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-        />
+        {isLoading ? (
+          <View style={styles.loadingContainer}>
+            <Text>Loading data...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContainer}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No leads found</Text>
+              </View>
+            }
+          />
+        )}
       </View>
     </View>
   );
@@ -470,7 +481,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#333333",
   },
-  contactInfo: {
+  subCategory: {
     fontSize: 12,
     color: "#7d8597",
     marginTop: 2,
@@ -479,29 +490,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  notesContainer: {
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-  },
-  notesLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "#7d8597",
-    marginBottom: 2,
-  },
-  notes: {
-    fontSize: 13,
-    color: "#333333",
-  },
   cardFooter: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     marginTop: 10,
   },
   dateTime: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 15,
+  },
+  employeeInfo: {
     flexDirection: "row",
     alignItems: "center",
     marginRight: 15,
@@ -511,16 +510,26 @@ const styles = StyleSheet.create({
     color: "#7d8597",
     marginLeft: 4,
   },
-  actions: {
-    flexDirection: "row",
-  },
-  actionButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#f5f5f5",
+  loadingContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 8,
+    paddingVertical: 30,
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  errorText: {
+    color: "#ff6b6b",
+    textAlign: "center",
+  },
+  emptyContainer: {
+    padding: 30,
+    alignItems: "center",
+  },
+  emptyText: {
+    color: "#7d8597",
+    textAlign: "center",
   },
 });

@@ -9,7 +9,7 @@ import { themeColors } from "@/utils/colors";
 import { useAuth } from "@/context/AuthContext";
 
 export default function FinancialPlanner() {
-  const { userData } = useAuth();
+  const { userData, accessToken } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -43,7 +43,7 @@ export default function FinancialPlanner() {
             ]}
             onPress={(e) => {
               e.stopPropagation();
-              router.push("/(hierarchy)/dsr-report" as never);
+              router.push("/dsr-report" as never);
             }}
           >
             <Text style={styles.buttonText}>DSR Report</Text>
