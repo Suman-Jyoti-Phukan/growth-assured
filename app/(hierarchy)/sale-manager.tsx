@@ -15,15 +15,11 @@ import { useAuth } from "@/context/AuthContext";
 import SkeletonLoader from "@/components/skeleton-loader";
 
 export default function SaleManager() {
-  const navigation = useRouter();
-
   const { parentId } = useLocalSearchParams();
 
   const { accessToken } = useAuth();
 
   const [salesManagers, setSalesManagers] = useState<IBaseEmployeeType[]>([]);
-
-  console.log(salesManagers);
 
   const [loading, setLoading] = useState(true);
 

@@ -24,6 +24,8 @@ export default function AreaSalesManager() {
 
   const { userData } = useAuth();
 
+  console.log("Area Sales Manager", userData);
+
   const renderPlannerCard = ({ item }: { item: IAreaSalesManager }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
@@ -74,12 +76,19 @@ export default function AreaSalesManager() {
   );
 
   return (
-    <FlatList
-      data={userData?.area_sales_managers}
-      keyExtractor={(item) => item.name}
-      contentContainerStyle={styles.container}
-      renderItem={renderPlannerCard}
-    />
+    <>
+      <FlatList
+        data={userData?.area_sales_managers}
+        keyExtractor={(item) => item.name}
+        contentContainerStyle={styles.container}
+        renderItem={renderPlannerCard}
+        ListEmptyComponent={
+          <View style={styles.center}>
+            <Text>No Area Sales Managers found.</Text>
+          </View>
+        }
+      />
+    </>
   );
 }
 
@@ -88,6 +97,11 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
     backgroundColor: "#f2f4f7",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   screenTitle: {
     fontSize: 24,

@@ -1,9 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
-import { organization } from "@/utils/fakeData";
-
-import { useNavigation } from "expo-router";
-
 import { themeColors } from "@/utils/colors";
 
 import { router } from "expo-router";
@@ -11,7 +7,9 @@ import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 
 export default function RegionalManager() {
-  const { userData, accessToken } = useAuth();
+  const { userData } = useAuth();
+
+  console.log("User Data", userData);
 
   return (
     <View style={styles.container}>

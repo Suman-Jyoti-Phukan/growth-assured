@@ -2,84 +2,73 @@ import { View, Text, Pressable, StyleSheet, FlatList } from "react-native";
 
 import React from "react";
 
-import { organization } from "@/utils/fakeData";
-
-import { useRouter } from "expo-router";
-
 import { router } from "expo-router";
 
 import { themeColors } from "@/utils/colors";
 
-interface IBranchManager {
-  name: string;
-  role: string;
-  dsr: {
-    date: string;
-    totalCalls: number;
-    meetings: number;
-    amount: number;
-  };
-  policiesSold: { clientName: string; amount: number }[];
-}
+import { useAuth } from "@/context/AuthContext";
 
 export default function BranchManager() {
-  const navigation = useRouter();
-
-  const branchManagers = organization.areaSalesManagers.flatMap(
-    (asm) => asm.branchManagers
-  );
-
-  const renderPlannerCard = ({ item }: { item: IBranchManager }) => (
-    <View style={styles.card}>
-      <Text style={styles.name}>{item.name}</Text>
-
-      <Text style={styles.role}>{item.role}</Text>
-
-      <Text style={styles.contact}>📞 +91 98765 43210</Text>
-
-      <Text style={styles.contact}>✉️ planner@example.com</Text>
-
-      <View style={{ flexDirection: "row", gap: 10 }}>
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
-          onPress={(e) => {
-            e.stopPropagation();
-            navigation.navigate("/(hierarchy)/sale-manager" as never);
-          }}
-        >
-          <Text style={styles.buttonText}>View Details</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
-          onPress={(e) => {
-            e.stopPropagation();
-            router.push("/(hierarchy)/login-report" as never);
-          }}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
-          onPress={(e) => {
-            e.stopPropagation();
-            router.push("/(hierarchy)/dsr-report" as never);
-          }}
-        >
-          <Text style={styles.buttonText}>DSR Report</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
+  const { userData } = useAuth();
 
   return (
-    <FlatList
-      data={branchManagers}
-      keyExtractor={(item) => item.name}
-      contentContainerStyle={styles.container}
-      renderItem={renderPlannerCard}
-    />
+    <View style={styles.container}>
+      <Pressable style={styles.card}>
+        <Text style={styles.name}>{userData?.employee.name}</Text>
+
+        <Text style={styles.role}>Regional Manager</Text>
+
+        <Text style={styles.contact}>{userData?.employee.mobile || "N/A"}</Text>
+
+        <Text style={styles.contact}>✉️ {userData?.employee.email}</Text>
+
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push({
+                pathname: "/(hierarchy)/sale-manager" as never,
+                params: {
+                  parentId: userData?.employee.id,
+                },
+              });
+            }}
+          >
+            <Text style={styles.buttonText}>View Details</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/login-report" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/dsr-report" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>DSR Report</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </View>
   );
 }
 

@@ -2,69 +2,55 @@ import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 
 import React from "react";
 
-import { organization } from "@/utils/fakeData";
-
 import { router } from "expo-router";
+
 import { themeColors } from "@/utils/colors";
 
-interface FinancialPlanner {
-  name: string;
-  role: string;
-  dsr: {
-    date: string;
-    totalCalls: number;
-    meetings: number;
-    amount: number;
-  };
-  policiesSold: { clientName: string; amount: number }[];
-}
+import { useAuth } from "@/context/AuthContext";
 
 export default function FinancialPlanner() {
-  const financialPlanners: FinancialPlanner[] =
-    organization.areaSalesManagers.flatMap((asm) =>
-      asm.branchManagers.flatMap((bm) =>
-        bm.salesManagers.flatMap((sm) => sm.financialPlanners || [])
-      )
-    );
-
-  const renderPlannerCard = ({ item }: { item: FinancialPlanner }) => (
-    <View style={styles.card}>
-      <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.role}>{item.role}</Text>
-      <Text style={styles.contact}>📞 +91 98765 43210</Text>
-      <Text style={styles.contact}>✉️ planner@example.com</Text>
-
-      <View style={{ flexDirection: "row", gap: 10 }}>
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
-          onPress={(e) => {
-            e.stopPropagation();
-            router.push("/(hierarchy)/login-report" as never);
-          }}
-        >
-          <Text style={styles.buttonText}>Login</Text>
-        </Pressable>
-
-        <Pressable
-          style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
-          onPress={(e) => {
-            e.stopPropagation();
-            router.push("/(hierarchy)/dsr-report" as never);
-          }}
-        >
-          <Text style={styles.buttonText}>DSR Report</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
+  const { userData } = useAuth();
 
   return (
-    <FlatList
-      data={financialPlanners}
-      keyExtractor={(item) => item.name}
-      contentContainerStyle={styles.container}
-      renderItem={renderPlannerCard}
-    />
+    <View style={styles.container}>
+      <Pressable style={styles.card}>
+        <Text style={styles.name}>{userData?.employee.name}</Text>
+
+        <Text style={styles.role}>Regional Manager</Text>
+
+        <Text style={styles.contact}>{userData?.employee.mobile || "N/A"}</Text>
+
+        <Text style={styles.contact}>✉️ {userData?.employee.email}</Text>
+
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/login-report" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && { opacity: 0.9 },
+            ]}
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push("/(hierarchy)/dsr-report" as never);
+            }}
+          >
+            <Text style={styles.buttonText}>DSR Report</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+    </View>
   );
 }
 

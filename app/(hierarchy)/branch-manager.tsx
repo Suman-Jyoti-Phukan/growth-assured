@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, Pressable, StyleSheet, FlatList } from "react-native";
 
 import React, { useEffect, useState } from "react";
 
@@ -29,6 +22,10 @@ export default function BranchManager() {
   const { accessToken } = useAuth();
 
   const [branchManagers, setBranchManagers] = useState<IBaseEmployeeType[]>([]);
+
+  console.log("Parent Id", parentId);
+
+  console.log("Branch Managers", branchManagers);
 
   const [loading, setLoading] = useState(true);
 

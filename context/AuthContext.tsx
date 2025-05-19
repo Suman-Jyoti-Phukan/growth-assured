@@ -93,8 +93,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const data = response.data;
 
-      console.log("data", data);
-
       await SecureStore.setItemAsync("authToken", data.access_token);
 
       await SecureStore.setItemAsync("userData", JSON.stringify(data.data));
