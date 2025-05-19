@@ -186,6 +186,14 @@ export default function DsrReport() {
     return <SkeletonLoader />;
   }
 
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -304,28 +312,18 @@ export default function DsrReport() {
           </TouchableOpacity>
         </View>
 
-        {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text>Loading data...</Text>
-          </View>
-        ) : error ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredData}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContainer}
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>No leads found</Text>
-              </View>
-            }
-          />
-        )}
+        <FlatList
+          data={filteredData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No leads found</Text>
+            </View>
+          }
+        />
       </View>
     </View>
   );

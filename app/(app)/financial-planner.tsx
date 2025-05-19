@@ -43,7 +43,7 @@ export default function FinancialPlanner() {
             ]}
             onPress={(e) => {
               e.stopPropagation();
-              router.push("/dsr-report" as never);
+              router.push("/(hierarchy)/dsr-report" as never);
             }}
           >
             <Text style={styles.buttonText}>DSR Report</Text>
