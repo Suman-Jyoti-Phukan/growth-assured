@@ -18,6 +18,7 @@ import axios from "axios";
 import { ROOT_URL } from "@/utils/routes";
 
 import { useAuth } from "@/context/AuthContext";
+import SkeletonLoader from "@/components/skeleton-loader";
 
 interface FinancialPlanner {
   name: string;
@@ -38,8 +39,6 @@ export default function FinancialPlannerScreen() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const [error, setError] = useState("");
-
-  console.log(error);
 
   const { parentId } = useLocalSearchParams();
 
@@ -70,6 +69,18 @@ export default function FinancialPlannerScreen() {
 
     fetchSalesManagers();
   }, [parentId]);
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: "red", fontSize: 16 }}>{error}</Text>
+      </View>
+    );
+  }
 
   const renderPlannerCard = ({ item }: { item: FinancialPlanner }) => (
     <View style={styles.card}>
@@ -102,19 +113,6 @@ export default function FinancialPlannerScreen() {
     </View>
   );
 
-  if (loading) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
-        <ActivityIndicator size="large" color={themeColors.primary} />
-      </View>
-    );
-  }
-
   return (
     <FlatList
       data={financialPlanners}
@@ -129,6 +127,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 12,
     backgroundColor: "#f2f4f7",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   card: {
     backgroundColor: "#ffffff",

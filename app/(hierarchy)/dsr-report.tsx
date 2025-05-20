@@ -20,6 +20,7 @@ import { ROOT_URL } from "@/utils/routes";
 import { useAuth } from "@/context/AuthContext";
 
 import SkeletonLoader from "@/components/skeleton-loader";
+
 import { useLocalSearchParams } from "expo-router";
 
 interface DsrData {
@@ -34,8 +35,6 @@ interface DsrData {
 
 export default function DsrReport() {
   const { userId } = useLocalSearchParams();
-
-  console.log(userId);
 
   const [activeTab, setActiveTab] = useState("all");
 

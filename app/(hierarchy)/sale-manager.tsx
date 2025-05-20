@@ -51,6 +51,18 @@ export default function SaleManager() {
     fetchSalesManagers();
   }, [parentId]);
 
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: "red", fontSize: 16 }}>{error}</Text>
+      </View>
+    );
+  }
+
   const renderPlannerCard = ({ item }: { item: IBaseEmployeeType }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
@@ -124,6 +136,11 @@ export default function SaleManager() {
 }
 
 const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     padding: 12,
     backgroundColor: "#f2f4f7",

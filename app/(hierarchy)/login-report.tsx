@@ -190,6 +190,14 @@ export default function Login() {
     return <SkeletonLoader />;
   }
 
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ color: "red", fontSize: 16 }}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -336,6 +344,11 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
     backgroundColor: "#ffffff",

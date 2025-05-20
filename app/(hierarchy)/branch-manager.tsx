@@ -23,10 +23,6 @@ export default function BranchManager() {
 
   const [branchManagers, setBranchManagers] = useState<IBaseEmployeeType[]>([]);
 
-  console.log("Parent Id", parentId);
-
-  console.log("Branch Managers", branchManagers);
-
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState<string | null>(null);
@@ -108,11 +104,7 @@ export default function BranchManager() {
   );
 
   if (loading) {
-    return (
-      <View style={styles.center}>
-        <SkeletonLoader />
-      </View>
-    );
+    return <SkeletonLoader />;
   }
 
   if (error) {

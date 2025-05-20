@@ -2,31 +2,18 @@ import { View, Text, Pressable, StyleSheet, FlatList } from "react-native";
 
 import React from "react";
 
-import { organization } from "@/utils/fakeData";
-
-import { useRouter } from "expo-router";
-
 import { router } from "expo-router";
 
 import { themeColors } from "@/utils/colors";
 
 import { useAuth } from "@/context/AuthContext";
 
-interface IAreaSalesManager {
-  name: string;
-  mobile?: string | number;
-  email: string;
-  id: number;
-}
-
 export default function AreaSalesManager() {
-  const navigation = useRouter();
-
   const { userData } = useAuth();
 
   console.log("Area Sales Manager", userData);
 
-  const renderPlannerCard = ({ item }: { item: IAreaSalesManager }) => (
+  const renderPlannerCard = ({ item }: { item: IBaseEmployeeType }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
 
