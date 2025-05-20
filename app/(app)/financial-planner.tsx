@@ -9,7 +9,7 @@ import { themeColors } from "@/utils/colors";
 import { useAuth } from "@/context/AuthContext";
 
 export default function FinancialPlanner() {
-  const { userData, accessToken } = useAuth();
+  const { userData } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -30,7 +30,12 @@ export default function FinancialPlanner() {
             ]}
             onPress={(e) => {
               e.stopPropagation();
-              router.push("/(hierarchy)/login-report" as never);
+              router.push({
+                pathname: "/(hierarchy)/login-report" as never,
+                params: {
+                  userId: userData?.employee.id,
+                },
+              });
             }}
           >
             <Text style={styles.buttonText}>Login</Text>

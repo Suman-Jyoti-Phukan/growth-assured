@@ -20,6 +20,8 @@ import { useAuth } from "@/context/AuthContext";
 
 import SkeletonLoader from "@/components/skeleton-loader";
 
+import { useLocalSearchParams } from "expo-router";
+
 interface DsrData {
   id: number;
   client: string;
@@ -33,6 +35,8 @@ interface DsrData {
 }
 
 export default function Login() {
+  const { userId } = useLocalSearchParams();
+
   const [activeTab, setActiveTab] = useState("all");
 
   const { accessToken } = useAuth();
@@ -68,7 +72,7 @@ export default function Login() {
       try {
         const response = await axios.post(
           `${ROOT_URL}/employee/client/fetch/policy`,
-          { employee_id: 11 },
+          { employee_id: userId },
           {
             headers: {
               "Content-Type": "application/json",

@@ -48,7 +48,12 @@ export default function BranchManager() {
             ]}
             onPress={(e) => {
               e.stopPropagation();
-              router.push("/(hierarchy)/login-report" as never);
+              router.push({
+                pathname: "/(hierarchy)/login-report" as never,
+                params: {
+                  userId: userData?.employee.id,
+                },
+              });
             }}
           >
             <Text style={styles.buttonText}>Login</Text>

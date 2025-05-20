@@ -11,10 +11,6 @@ import { useAuth } from "@/context/AuthContext";
 export default function AreaSalesManager() {
   const { userData } = useAuth();
 
-  const hasAreaSalesManagerData = () => {
-    return userData?.employee.type && true;
-  };
-
   return (
     <View style={styles.container}>
       <Pressable style={styles.card}>
@@ -52,7 +48,12 @@ export default function AreaSalesManager() {
             ]}
             onPress={(e) => {
               e.stopPropagation();
-              router.push("/(hierarchy)/login-report" as never);
+              router.push({
+                pathname: "/(hierarchy)/login-report" as never,
+                params: {
+                  userId: userData?.employee.id,
+                },
+              });
             }}
           >
             <Text style={styles.buttonText}>Login</Text>
