@@ -33,7 +33,10 @@ import axios from "axios";
 import { ROOT_URL } from "@/utils/routes";
 
 import { router } from "expo-router";
+
 import SkeletonLoader from "@/components/skeleton-loader";
+
+import { useAuth } from "@/context/AuthContext";
 
 type Colors = {
   primary: string;
@@ -146,8 +149,6 @@ export default function PolicyHolderScreen() {
   const [isPolicyCategoryListLoading, setIsPolicyCategoryListLoading] =
     useState(false);
 
-  console.log(policyCategoryList);
-
   const [currentPhase, setCurrentPhase] = useState<number>(0);
 
   const [formValues, setFormValues] = useState<Record<string, string>>({});
@@ -183,6 +184,10 @@ export default function PolicyHolderScreen() {
     ? policySubcategories[selectedCategory] || []
     : [];
 
+  const { accessToken } = useAuth();
+
+  console.log(accessToken);
+
   useEffect(() => {
     async function getCategoryList() {
       try {
@@ -191,7 +196,7 @@ export default function PolicyHolderScreen() {
         const response = await axios.get(`${ROOT_URL}/employee/category`, {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 4|2ZuuUXpr8Ob9l9zz086Ui8egNLFsxQPcwgPFluHE9d2fcd39`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
@@ -408,7 +413,7 @@ export default function PolicyHolderScreen() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer 4|2ZuuUXpr8Ob9l9zz086Ui8egNLFsxQPcwgPFluHE9d2fcd39`,
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );

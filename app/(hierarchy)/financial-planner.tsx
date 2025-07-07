@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 
 import React, { useEffect, useState } from "react";
 
@@ -18,23 +11,12 @@ import axios from "axios";
 import { ROOT_URL } from "@/utils/routes";
 
 import { useAuth } from "@/context/AuthContext";
-import SkeletonLoader from "@/components/skeleton-loader";
 
-interface FinancialPlanner {
-  name: string;
-  role: string;
-  dsr: {
-    date: string;
-    totalCalls: number;
-    meetings: number;
-    amount: number;
-  };
-  policiesSold: { clientName: string; amount: number }[];
-}
+import SkeletonLoader from "@/components/skeleton-loader";
 
 export default function FinancialPlannerScreen() {
   const [financialPlanners, setFinancialPlanners] = useState<
-    FinancialPlanner[]
+    IBaseEmployeeType[]
   >([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -82,10 +64,10 @@ export default function FinancialPlannerScreen() {
     );
   }
 
-  const renderPlannerCard = ({ item }: { item: FinancialPlanner }) => (
+  const renderPlannerCard = ({ item }: { item: IBaseEmployeeType }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.role}>{item.role}</Text>
+      <Text style={styles.role}>Financila Planner</Text>
       <Text style={styles.contact}>📞 +91 98765 43210</Text>
       <Text style={styles.contact}>✉️ planner@example.com</Text>
 

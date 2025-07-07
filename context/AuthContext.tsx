@@ -61,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const checkAuth = async () => {
       try {
         const token = await SecureStore.getItemAsync("authToken");
+
         const storedUserData = await SecureStore.getItemAsync("userData");
 
         if (token) {
@@ -92,6 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       const data = response.data;
+
+      console.log("Login Data...", JSON.stringify(data, null, 2));
 
       await SecureStore.setItemAsync("authToken", data.access_token);
 

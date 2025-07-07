@@ -9,7 +9,9 @@ import { themeColors } from "@/utils/colors";
 import { useAuth } from "@/context/AuthContext";
 
 export default function FinancialPlanner() {
-  const { userData } = useAuth();
+  const { userData, accessToken } = useAuth();
+
+  console.log(accessToken);
 
   return (
     <View style={styles.container}>
