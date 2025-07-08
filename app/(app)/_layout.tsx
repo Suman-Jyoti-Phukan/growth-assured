@@ -168,6 +168,26 @@ export default function AppLayout() {
         />
 
         <Drawer.Screen
+          name="contact-us"
+          options={{
+            drawerLabel: "Contact Us",
+            title: "Contact Us",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons
+                name="information-circle-outline"
+                color={color}
+                size={size}
+              />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
           name="wallet"
           options={{
             drawerLabel: "Wallet",
