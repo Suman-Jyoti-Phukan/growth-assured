@@ -49,26 +49,32 @@ export const SelectionModal: React.FC<SelectionModalProps> = ({
           style={selectionModalStyles.optionsList}
           showsVerticalScrollIndicator={false}
         >
-          {options?.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={selectionModalStyles.optionItem}
-              onPress={() => {
-                onSelect(option.name || option);
-                onClose();
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={selectionModalStyles.optionText}>
-                {option.name || option}
-              </Text>
-              <FontAwesome
-                name="chevron-right"
-                size={14}
-                color={COLORS.lightText}
-              />
-            </TouchableOpacity>
-          ))}
+          {options?.length === 0 ? (
+            <Text style={selectionModalStyles.noSubCategoryText}>
+              No Sub Category Found.
+            </Text>
+          ) : (
+            options?.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={selectionModalStyles.optionItem}
+                onPress={() => {
+                  onSelect(option.name || option);
+                  onClose();
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={selectionModalStyles.optionText}>
+                  {option.name.toUpperCase() || option}
+                </Text>
+                <FontAwesome
+                  name="chevron-right"
+                  size={14}
+                  color={COLORS.lightText}
+                />
+              </TouchableOpacity>
+            ))
+          )}
         </ScrollView>
       </View>
     </View>
@@ -115,4 +121,10 @@ const selectionModalStyles = StyleSheet.create({
     borderBottomColor: COLORS.border,
   },
   optionText: { fontSize: responsiveFontSize(1.8), color: COLORS.text },
+  noSubCategoryText: {
+    marginLeft: 20,
+    marginVertical: 20,
+    fontSize: responsiveFontSize(1.8),
+    textAlign: "center",
+  },
 });

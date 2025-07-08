@@ -26,4 +26,3 @@ export default function AuthLayout() {
     </Stack>
   );
 }
-5

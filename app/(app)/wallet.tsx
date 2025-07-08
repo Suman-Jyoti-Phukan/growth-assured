@@ -236,6 +236,8 @@ export default function Wallet() {
     getWalletHistory();
   }, []);
 
+  console.log("Wallet Data:", wallet);
+
   const renderTransactionGroup = ({ item }: { item: GroupedTransactions }) => (
     <View style={styles.dateGroup}>
       {renderDateHeader(item.date)}

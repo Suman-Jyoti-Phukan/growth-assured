@@ -57,10 +57,6 @@ type IconMap = {
   [key: string]: string;
 };
 
-type PolicySubcategories = {
-  [key: string]: string[];
-};
-
 const COLORS: Colors = {
   primary: "#5B67CA",
   secondary: "#F1F5FF",
@@ -83,58 +79,25 @@ const documentIcons: IconMap = {
   Photo: "camera",
 };
 
-const policyCategories: string[] = [
-  "Automobile Insurance",
-  "Health Insurance",
-  "Life Insurance",
-  "Home Insurance",
-  "Travel Insurance",
-  "Business Insurance",
-];
-
-const policySubcategories: PolicySubcategories = {
-  "Automobile Insurance": [
-    "Automobile Type-1 (Two-Wheeler)",
-    "Automobile Type-2 (Four-Wheeler)",
-    "Automobile Type-3 (Commercial)",
-    "Automobile Type-4 (Electric)",
-  ],
-  "Health Insurance": [
-    "Health Type-1 (Individual)",
-    "Health Type-2 (Family)",
-    "Health Type-3 (Senior Citizen)",
-    "Health Type-4 (Critical Illness)",
-  ],
-  "Life Insurance": [
-    "Life Type-1 (Term)",
-    "Life Type-2 (Whole Life)",
-    "Life Type-3 (Endowment)",
-    "Life Type-4 (ULIP)",
-  ],
-  "Home Insurance": [
-    "Home Type-1 (Structure)",
-    "Home Type-2 (Contents)",
-    "Home Type-3 (Comprehensive)",
-    "Home Type-4 (Landlord)",
-  ],
-  "Travel Insurance": [
-    "Travel Type-1 (Domestic)",
-    "Travel Type-2 (International)",
-    "Travel Type-3 (Multi-trip)",
-    "Travel Type-4 (Cruise)",
-  ],
-  "Business Insurance": [
-    "Business Type-1 (Property)",
-    "Business Type-2 (Liability)",
-    "Business Type-3 (Workers Comp)",
-    "Business Type-4 (Professional)",
-  ],
-};
-
 export interface DocumentUpload {
   uri: string;
   name: string;
   type: string;
+}
+
+const requiredPersonalFields: string[] = [
+  "Name",
+  "DOB",
+  "Phone No.",
+  "E-Mail Id",
+  "Father's Name",
+  "Mother's Name",
+  "Address as per Proof",
+];
+
+interface PolicyCategory {
+  id: string;
+  name: string;
 }
 
 /** SUMAN -> SUB CATEGORY LIST NOT PROVIDED BY ABHILASH .
@@ -144,7 +107,9 @@ export interface DocumentUpload {
  *
  */
 export default function PolicyHolderScreen() {
-  const [policyCategoryList, setPolicyCategoryList] = useState();
+  const [policyCategoryList, setPolicyCategoryList] = useState<
+    PolicyCategory[]
+  >([]);
 
   const [isPolicyCategoryListLoading, setIsPolicyCategoryListLoading] =
     useState(false);
@@ -180,13 +145,41 @@ export default function PolicyHolderScreen() {
 
   const [reviewModalVisible, setReviewModalVisible] = useState<boolean>(false);
 
-  const availableSubcategories: string[] = selectedCategory
-    ? policySubcategories[selectedCategory] || []
-    : [];
-
   const { accessToken } = useAuth();
 
-  console.log(accessToken);
+  const [isPolicySubcategoryListLoading, setIsPolicySubcategoryListLoading] =
+    useState(false);
+
+  const [policySubcategoryList, setPolicySubcategoryList] = useState<string[]>(
+    []
+  );
+
+  const getSubcategoryList = async (categoryId: string) => {
+    try {
+      setIsPolicySubcategoryListLoading(true);
+      setPolicySubcategoryList([]);
+
+      const response = await axios.post(
+        `${ROOT_URL}/employee/sub_category`,
+        { category_id: categoryId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const data = response.data.data;
+
+      setPolicySubcategoryList(data);
+    } catch (err) {
+      console.error("Failed to fetch subcategory list:", err);
+      Alert.alert("Error", "Failed to load subcategories. Please try again.");
+    } finally {
+      setIsPolicySubcategoryListLoading(false);
+    }
+  };
 
   useEffect(() => {
     async function getCategoryList() {
@@ -212,19 +205,21 @@ export default function PolicyHolderScreen() {
     getCategoryList();
   }, []);
 
-  if (isPolicyCategoryListLoading) {
-    return <SkeletonLoader />;
-  }
+  useEffect(() => {
+    if (selectedCategory) {
+      console.log("Effect triggered for selectedCategory:", selectedCategory);
 
-  const requiredPersonalFields: string[] = [
-    "Name",
-    "DOB",
-    "Phone No.",
-    "E-Mail Id",
-    "Father's Name",
-    "Mother's Name",
-    "Address as per Proof",
-  ];
+      const policyId = policyCategoryList.find(
+        (category) => category.name === selectedCategory
+      );
+
+      console.log(policyId?.id);
+
+      if (policyId?.id) {
+        getSubcategoryList(policyId.id);
+      }
+    }
+  }, [accessToken, selectedCategory]);
 
   const isPolicyInfoComplete = (): boolean =>
     selectedCategory !== "" && selectedSubcategory !== "";
@@ -386,7 +381,6 @@ export default function PolicyHolderScreen() {
       formData.append(key, value ?? "");
     });
 
-    // Append image files
     Object.entries(documentImagesMap).forEach(([label, key]) => {
       const file = documentImages[label];
       if (file) {
@@ -441,6 +435,10 @@ export default function PolicyHolderScreen() {
       );
     }
   };
+
+  if (isPolicyCategoryListLoading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -497,8 +495,8 @@ export default function PolicyHolderScreen() {
       >
         {currentPhase === 0 && (
           <PolicyInformationPhase
-            selectedCategory={selectedCategory}
-            selectedSubcategory={selectedSubcategory}
+            selectedCategory={selectedCategory.toUpperCase()}
+            selectedSubcategory={selectedSubcategory.toUpperCase()}
             onOpenCategoryModal={() => setCategoryModalVisible(true)}
             onOpenSubcategoryModal={() => setSubcategoryModalVisible(true)}
           />
@@ -573,7 +571,7 @@ export default function PolicyHolderScreen() {
         visible={subcategoryModalVisible}
         onClose={() => setSubcategoryModalVisible(false)}
         title="Select Policy Subcategory"
-        options={availableSubcategories as any}
+        options={policySubcategoryList as any}
         onSelect={setSelectedSubcategory}
       />
       <ImagePreviewModal

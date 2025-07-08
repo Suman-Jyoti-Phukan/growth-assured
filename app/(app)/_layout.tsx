@@ -20,7 +20,7 @@ import SkeletonLoader from "@/components/skeleton-loader";
 
 import { userTypeWithId } from "@/utils/userType";
 
-// !!! Read before proceeding. The expo router by default adds all the file located in the folderand it is hard to conditionally render complex system like hierarchy system. Some issues are if we placed the all the groups item inside of the (app), we will not the get the stack as we are conditionally rendering everything and if we create another route app/heirarchy, it become pretty complex to render the stack as the app router drawer will only render the (app)/heirarchy stack as a main item, then we can follow the stack navigation. So, we are a work around , we have two different identical pages first we render in on the drawer item then we follow the stack using (hierarchy), so we have to make chances on both of them to work it perfectly. Solution for fixing it -> Add a app/hierarchy route and paste the content of the (hierarchy) and do the conditional rendering.
+// !!! Read before proceeding. The expo router by default adds all the file located in the folder and it is hard to conditionally render complex system like hierarchy system. Some issues are if we placed the all the groups item inside of the (app), we will not the get the stack as we are conditionally rendering everything and if we create another route app/heirarchy, it become pretty complex to render the stack as the app router drawer will only render the (app)/heirarchy stack as a main item, then we can follow the stack navigation. So, we are a work around , we have two different identical pages first we render in on the drawer item then we follow the stack using (hierarchy), so we have to make chances on both of them to work it perfectly. Solution for fixing it -> Add a app/hierarchy route and paste the content of the (hierarchy) and do the conditional rendering.
 
 export default function AppLayout() {
   const { isAuthenticated, isLoading, userData } = useAuth();
@@ -132,6 +132,42 @@ export default function AppLayout() {
         />
 
         <Drawer.Screen
+          name="terms-and-condition"
+          options={{
+            drawerLabel: "Terms & Conditions",
+            title: "Terms & Conditions",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="document-text" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="about-us"
+          options={{
+            drawerLabel: "About Us",
+            title: "About Us",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons
+                name="information-circle-outline"
+                color={color}
+                size={size}
+              />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
           name="wallet"
           options={{
             drawerLabel: "Wallet",
@@ -151,6 +187,22 @@ export default function AppLayout() {
           name="profile"
           options={{
             drawerLabel: "Profile",
+            title: "Profile",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="person" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="client-list"
+          options={{
+            drawerLabel: "Client List",
             title: "Profile",
             drawerIcon: ({ color, size }) => (
               <Ionicons name="person" color={color} size={size} />
