@@ -220,10 +220,10 @@ export default function AppLayout() {
         />
 
         <Drawer.Screen
-          name="client-list"
+          name="policy-list"
           options={{
-            drawerLabel: "Client List",
-            title: "Profile",
+            drawerLabel: "Policy List",
+            title: "Policy List",
             drawerIcon: ({ color, size }) => (
               <Ionicons name="person" color={color} size={size} />
             ),
