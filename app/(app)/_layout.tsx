@@ -121,7 +121,7 @@ export default function AppLayout() {
             drawerLabel: "Policy",
             title: "Policy",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="document-text" color={color} size={size} />
+              <Ionicons name="shield-checkmark" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: undefined,
@@ -137,7 +137,55 @@ export default function AppLayout() {
             drawerLabel: "Terms & Conditions",
             title: "Terms & Conditions",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="document-text" color={color} size={size} />
+              <Ionicons name="contract" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="disclaimer"
+          options={{
+            drawerLabel: "Disclaimer",
+            title: "Disclaimer",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="warning" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="refund-policy"
+          options={{
+            drawerLabel: "Refund Policy",
+            title: "Refund Policy",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="return-up-back" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: undefined,
+              marginVertical: 5,
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="privacy-policy"
+          options={{
+            drawerLabel: "Privacy Policy",
+            title: "Privacy Policy",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="lock-closed" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: undefined,
@@ -153,11 +201,7 @@ export default function AppLayout() {
             drawerLabel: "About Us",
             title: "About Us",
             drawerIcon: ({ color, size }) => (
-              <Ionicons
-                name="information-circle-outline"
-                color={color}
-                size={size}
-              />
+              <Ionicons name="information-circle" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: undefined,
@@ -173,11 +217,7 @@ export default function AppLayout() {
             drawerLabel: "Contact Us",
             title: "Contact Us",
             drawerIcon: ({ color, size }) => (
-              <Ionicons
-                name="information-circle-outline"
-                color={color}
-                size={size}
-              />
+              <Ionicons name="call" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: undefined,
@@ -225,7 +265,7 @@ export default function AppLayout() {
             drawerLabel: "Policy List",
             title: "Policy List",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="person" color={color} size={size} />
+              <Ionicons name="list" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: undefined,
@@ -241,7 +281,7 @@ export default function AppLayout() {
             drawerLabel: "Appointment",
             title: "Appointment",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="mail-open-outline" color={color} size={size} />
+              <Ionicons name="calendar" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: undefined,
@@ -284,7 +324,7 @@ export default function AppLayout() {
             title: "Branch Manager",
             drawerLabel: showBranchManager ? "Branch Manager" : "Hidden",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="filter" color={color} size={size} />
+              <Ionicons name="business" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: showBranchManager ? undefined : "none",
@@ -299,7 +339,7 @@ export default function AppLayout() {
             title: "Sale Manager",
             drawerLabel: showSaleManager ? "Sale Manager" : "Hidden",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="filter" color={color} size={size} />
+              <Ionicons name="trending-up" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: showSaleManager ? undefined : "none",
@@ -314,7 +354,7 @@ export default function AppLayout() {
             title: "Financial Planner",
             drawerLabel: showFinancialPlanner ? "Financial Planner" : "Hidden",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="filter" color={color} size={size} />
+              <Ionicons name="calculator" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: showFinancialPlanner ? undefined : "none",
@@ -329,7 +369,7 @@ export default function AppLayout() {
             title: "Regional Manager",
             drawerLabel: showRegionalPlanner ? "Regional Manager" : "Hidden",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="filter" color={color} size={size} />
+              <Ionicons name="map" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: showRegionalPlanner ? undefined : "none",
@@ -344,7 +384,7 @@ export default function AppLayout() {
             title: "Area Sales Manager",
             drawerLabel: showAreaSaleManager ? "Area Sales Manager" : "Hidden",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="filter" color={color} size={size} />
+              <Ionicons name="location" color={color} size={size} />
             ),
             drawerItemStyle: {
               display: showAreaSaleManager ? undefined : "none",
@@ -404,7 +444,7 @@ export default function AppLayout() {
             drawerLabel: "Test",
             title: "Test",
             drawerIcon: ({ color, size }) => (
-              <Ionicons name="home" color={color} size={size} />
+              <Ionicons name="flask" color={color} size={size} />
             ),
           }}
         />

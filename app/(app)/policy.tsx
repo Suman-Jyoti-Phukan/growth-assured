@@ -1,293 +1,302 @@
-import React from "react";
-
 import {
   View,
   Text,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
   StatusBar,
   TouchableOpacity,
-  FlatList,
-  StyleSheet,
+  Dimensions,
 } from "react-native";
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useRouter } from "expo-router";
 
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+const { width } = Dimensions.get("window");
 
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-
-import { responsiveFontSize } from "react-native-responsive-dimensions";
-
-import { themeColors } from "@/utils/colors";
-
-interface PolicyItem {
+interface IPolicy {
   id: string;
   name: string;
   status: string;
-  premium: string;
-  type: string;
-  validity: string;
-  icon: string;
+  holderName: string;
+  createdAt: string;
 }
 
 const policies = [
   {
     id: "1",
-    name: "Health Policy",
+    name: "Health Insurance Premium",
     status: "Active",
-    premium: "$500",
-    type: "Individual",
-    validity: "1 Year",
-    icon: "heart-pulse",
+    holderName: "John Smith",
+    createdAt: "2024-01-15",
   },
   {
     id: "2",
-    name: "Automobile Policy",
-    status: "Expired",
-    premium: "$300",
-    type: "Vehicle",
-    validity: "2 Years",
-    icon: "car",
+    name: "Auto Insurance Coverage",
+    status: "Pending",
+    holderName: "Sarah Johnson",
+    createdAt: "2024-02-20",
   },
   {
     id: "3",
-    name: "Life Insurance",
-    status: "Active",
-    premium: "$1000",
-    type: "Family",
-    validity: "10 Years",
-    icon: "shield-account",
+    name: "Life Insurance Policy",
+    status: "Expired",
+    holderName: "Michael Brown",
+    createdAt: "2023-12-10",
   },
   {
     id: "4",
-    name: "Home Insurance",
+    name: "Home Insurance Protection",
     status: "Active",
-    premium: "$800",
-    type: "Property",
-    validity: "5 Years",
-    icon: "home",
+    holderName: "Emily Davis",
+    createdAt: "2024-03-05",
   },
   {
     id: "5",
     name: "Travel Insurance",
-    status: "Expired",
-    premium: "$200",
-    type: "Travel",
-    validity: "6 Months",
-    icon: "airplane",
+    status: "Cancelled",
+    holderName: "Robert Wilson",
+    createdAt: "2024-01-28",
   },
 ];
 
-const renderStatusBadge = (status: string) => {
-  const isActive = status === "Active";
-  return (
-    <View
-      style={[
-        styles.statusBadge,
-        {
-          backgroundColor: isActive ? "#E6F9EF" : "#FDEBEC",
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.statusDot,
-          { backgroundColor: isActive ? "#28C76F" : "#EA5455" },
-        ]}
-      />
-      <Text
-        style={[styles.statusText, { color: isActive ? "#28C76F" : "#EA5455" }]}
-      >
-        {status}
-      </Text>
-    </View>
-  );
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "active":
+      return "#10B981";
+    case "pending":
+      return "#F59E0B";
+    case "expired":
+      return "#EF4444";
+    case "cancelled":
+      return "#6B7280";
+    default:
+      return "#6B7280";
+  }
 };
 
-const Policy = () => {
-  const { primary } = themeColors;
+const getStatusBgColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "active":
+      return "#D1FAE5";
+    case "pending":
+      return "#FEF3C7";
+    case "expired":
+      return "#FEE2E2";
+    case "cancelled":
+      return "#F3F4F6";
+    default:
+      return "#F3F4F6";
+  }
+};
 
-  const renderPolicyItem = ({ item }: { item: PolicyItem }) => (
-    <TouchableOpacity activeOpacity={0.9} style={styles.policyCard}>
-      <View style={styles.cardHeader}>
-        <View style={styles.policyIconContainer}>
-          <MaterialCommunityIcons name={item.icon} size={22} color="#FFF" />
-        </View>
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
 
-        <View style={styles.policyTitleContainer}>
-          <Text style={styles.policyName}>{item.name}</Text>
-          <Text style={styles.policyType}>{item.type}</Text>
-        </View>
+const PolicyListScreen = () => {
+  const route = useRouter();
 
-        {renderStatusBadge(item.status)}
-      </View>
+  const handlePolicyPress = (policy: IPolicy) => {
+    console.log("Policy pressed:", policy);
 
-      <View style={styles.cardDivider} />
-
-      <View style={styles.detailsContainer}>
-        <View style={styles.detailItem}>
-          <FontAwesome name="dollar" size={14} color="#94A3B8" />
-          <View style={styles.detailTextContainer}>
-            <Text style={styles.detailLabel}>Premium</Text>
-            <Text style={styles.detailValue}>{item.premium}</Text>
-          </View>
-        </View>
-
-        <View style={styles.detailItem}>
-          <MaterialIcons name="timer" size={14} color="#94A3B8" />
-          <View style={styles.detailTextContainer}>
-            <Text style={styles.detailLabel}>Validity</Text>
-            <Text style={styles.detailValue}>{item.validity}</Text>
-          </View>
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.viewDetailsButton}>
-        <Text style={styles.viewDetailsText}>View Details</Text>
-        <MaterialIcons name="arrow-forward-ios" size={12} color={primary} />
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    route.push("/policy-details");
+  };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FD" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Policies</Text>
-        <Text style={styles.headerSubtitle}>
-          {policies.filter((p) => p.status === "Active").length} Active •{" "}
-          {policies.filter((p) => p.status === "Expired").length} Expired
-        </Text>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerSubtitle}>
+            Manage your insurance policies
+          </Text>
+        </View>
+
+        <View style={styles.decorativeCircle1} />
+        <View style={styles.decorativeCircle2} />
       </View>
 
-      <FlatList
-        data={policies}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
+      <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        renderItem={renderPolicyItem}
-      />
-    </View>
+        contentContainerStyle={styles.scrollContent}
+      >
+        {policies.map((policy) => (
+          <TouchableOpacity
+            key={policy.id}
+            style={styles.policyCard}
+            onPress={() => handlePolicyPress(policy)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.cardHeader}>
+              <Text style={styles.policyName} numberOfLines={2}>
+                {policy.name}
+              </Text>
+              <View
+                style={[
+                  styles.statusBadge,
+                  { backgroundColor: getStatusBgColor(policy.status) },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: getStatusColor(policy.status) },
+                  ]}
+                >
+                  {policy.status}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.cardBody}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Policy Holder</Text>
+                <Text style={styles.infoValue} numberOfLines={1}>
+                  {policy.holderName}
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Created</Text>
+                <Text style={styles.infoValue}>
+                  {formatDate(policy.createdAt)}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FD",
-    paddingHorizontal: 16,
+    backgroundColor: "#F8FAFC",
   },
   header: {
-    paddingVertical: 20,
+    backgroundColor: "#FFFFFF",
+    paddingTop: 20,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    position: "relative",
+    overflow: "hidden",
+  },
+  headerContent: {
+    zIndex: 1,
   },
   headerTitle: {
-    fontSize: responsiveFontSize(3),
+    fontSize: 28,
     fontWeight: "700",
-    color: "#0F172A",
+    color: "#1F2937",
     marginBottom: 4,
   },
   headerSubtitle: {
-    fontSize: responsiveFontSize(1.7),
-    color: "#64748B",
+    fontSize: 16,
+    color: "#6B7280",
+    fontWeight: "400",
   },
-  listContainer: {
-    paddingBottom: 20,
+  decorativeCircle1: {
+    position: "absolute",
+    top: -20,
+    right: -40,
+    width: 120,
+    height: 120,
+    backgroundColor: "#3B82F6",
+    borderRadius: 60,
+    opacity: 0.1,
+  },
+  decorativeCircle2: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 80,
+    height: 80,
+    backgroundColor: "#8B5CF6",
+    borderRadius: 40,
+    opacity: 0.05,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 40,
   },
   policyCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
+    padding: 20,
     marginBottom: 16,
-    padding: 18,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowRadius: 8,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
   },
   cardHeader: {
     flexDirection: "row",
-    alignItems: "center",
-  },
-  policyIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#6366F1",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  policyTitleContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  policyName: {
-    fontSize: responsiveFontSize(2),
-    fontWeight: "600",
-    color: "#1E293B",
-  },
-  policyType: {
-    fontSize: responsiveFontSize(1.4),
-    color: "#94A3B8",
-    marginTop: 2,
-  },
-  statusBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 5,
-  },
-  statusText: {
-    fontSize: responsiveFontSize(1.4),
-    fontWeight: "500",
-  },
-  cardDivider: {
-    height: 1,
-    backgroundColor: "#E2E8F0",
-    marginVertical: 16,
-  },
-  detailsContainer: {
-    flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 16,
   },
-  detailItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "48%",
-  },
-  detailTextContainer: {
-    marginLeft: 8,
-  },
-  detailLabel: {
-    fontSize: responsiveFontSize(1.3),
-    color: "#94A3B8",
-  },
-  detailValue: {
-    fontSize: responsiveFontSize(1.7),
+  policyName: {
+    fontSize: 18,
     fontWeight: "600",
-    color: "#0F172A",
+    color: "#1F2937",
+    flex: 1,
+    marginRight: 12,
+    lineHeight: 24,
   },
-  viewDetailsButton: {
-    flexDirection: "row",
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    minWidth: 70,
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    backgroundColor: "#EEF2FF",
-    borderRadius: 8,
-    marginTop: 8,
   },
-  viewDetailsText: {
-    fontSize: responsiveFontSize(1.6),
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  cardBody: {
+    gap: 12,
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: "#6B7280",
     fontWeight: "500",
-    color: "#6366F1",
-    marginRight: 4,
+    flex: 1,
+  },
+  infoValue: {
+    fontSize: 14,
+    color: "#374151",
+    fontWeight: "600",
+    flex: 1,
+    textAlign: "right",
   },
 });
 
-export default Policy;
+export default PolicyListScreen;

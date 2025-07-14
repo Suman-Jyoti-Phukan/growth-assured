@@ -118,11 +118,11 @@ const Profile = () => {
           label="Account Number"
           value="****-****-1234"
         />
-        <InfoRow icon="copy-outline" label="Routing Number" value="021000021" />
+        <InfoRow icon="copy-outline" label="IFSC CODE" value="021000021" />
         <InfoRow
           icon="wallet-outline"
-          label="Account Type"
-          value="Checking"
+          label="MICR"
+          value="HIMUBURI225"
           isLast
         />
       </InfoCard>
