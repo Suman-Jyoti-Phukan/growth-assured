@@ -7,87 +7,18 @@ import {
   StatusBar,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 
 import { useRouter } from "expo-router";
 
-const { width } = Dimensions.get("window");
+import axios from "axios";
 
-interface IPolicy {
-  id: string;
-  name: string;
-  status: string;
-  holderName: string;
-  createdAt: string;
-}
+import { ROOT_URL } from "@/utils/routes";
 
-const policies = [
-  {
-    id: "1",
-    name: "Health Insurance Premium",
-    status: "Active",
-    holderName: "John Smith",
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Auto Insurance Coverage",
-    status: "Pending",
-    holderName: "Sarah Johnson",
-    createdAt: "2024-02-20",
-  },
-  {
-    id: "3",
-    name: "Life Insurance Policy",
-    status: "Expired",
-    holderName: "Michael Brown",
-    createdAt: "2023-12-10",
-  },
-  {
-    id: "4",
-    name: "Home Insurance Protection",
-    status: "Active",
-    holderName: "Emily Davis",
-    createdAt: "2024-03-05",
-  },
-  {
-    id: "5",
-    name: "Travel Insurance",
-    status: "Cancelled",
-    holderName: "Robert Wilson",
-    createdAt: "2024-01-28",
-  },
-];
+import { useEffect, useState } from "react";
 
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "active":
-      return "#10B981";
-    case "pending":
-      return "#F59E0B";
-    case "expired":
-      return "#EF4444";
-    case "cancelled":
-      return "#6B7280";
-    default:
-      return "#6B7280";
-  }
-};
-
-const getStatusBgColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "active":
-      return "#D1FAE5";
-    case "pending":
-      return "#FEF3C7";
-    case "expired":
-      return "#FEE2E2";
-    case "cancelled":
-      return "#F3F4F6";
-    default:
-      return "#F3F4F6";
-  }
-};
+import { useAuth } from "@/context/AuthContext";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -98,14 +29,217 @@ const formatDate = (dateString: string) => {
   });
 };
 
+interface Employee {
+  id: number;
+  unique_code: string;
+  name: string;
+  mobile: string;
+  email: string;
+  type: string;
+}
+
+interface BankDetails {
+  id: number;
+  employee_id: number;
+  name: string;
+  bank_name: string;
+  branch_name: string;
+  acc_no: string;
+  ifsc: string;
+  micr: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Policy {
+  id: number;
+  employee_id: number;
+  uu_id: string | null;
+  client_id: number;
+  category_id: number;
+  sub_category_id: number;
+  plan_amount: string;
+  gst_perc: string;
+  commission_amount: string;
+  status: string;
+  approved_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface EmployeeDataResponse {
+  status: boolean;
+  message: string;
+  error_code: boolean;
+  error_message: string | null;
+  data: Employee[];
+  bank_details: BankDetails | null;
+  drs_data: any[];
+  policies: Policy[];
+  app_writeup: any;
+}
+
 const PolicyListScreen = () => {
   const route = useRouter();
 
-  const handlePolicyPress = (policy: IPolicy) => {
-    console.log("Policy pressed:", policy);
+  const { accessToken, userData } = useAuth();
 
-    route.push("/policy-details");
+  const [employeeData, setEmployeeData] = useState<EmployeeDataResponse | null>(
+    null
+  );
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
+
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const [subCategories, setSubCategories] = useState<any[]>([]);
+
+  const [catLoading, setCatLoading] = useState(false);
+
+  const [catError, setCatError] = useState<string | null>(null);
+
+  const [subCatLoading, setSubCatLoading] = useState(false);
+
+  const [subCatError, setSubCatError] = useState<string | null>(null);
+
+  const handlePolicyPress = (policy: any) => {
+    console.log("Policy pressed:", policy);
+    route.push({
+      pathname: "/policy-details",
+      params: {
+        policy: JSON.stringify(policy),
+      },
+    });
   };
+
+  const getEmployeeDetail = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(
+        `${ROOT_URL}/employee/fetchEmployee`,
+        {
+          employee_id: userData?.employee.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      console.log("Response Data", JSON.stringify(response.data, null, 2));
+
+      setEmployeeData(response.data);
+    } catch (error: any) {
+      console.log(error);
+      setError(error?.message || "Failed to fetch employee details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    setCatLoading(true);
+    setCatError(null);
+    try {
+      const response = await axios.get(`${ROOT_URL}/employee/category`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setCategories(response.data.data || []);
+    } catch (err: any) {
+      setCatError(err?.message || "Failed to fetch categories");
+    } finally {
+      setCatLoading(false);
+    }
+  };
+
+  const fetchSubCategories = async (categoryIds: number[]) => {
+    setSubCatLoading(true);
+    setSubCatError(null);
+    try {
+      const allSubCats: any[] = [];
+      for (const categoryId of categoryIds) {
+        const response = await axios.post(
+          `${ROOT_URL}/employee/sub_category`,
+          { category_id: categoryId },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.data.data) {
+          allSubCats.push(...response.data.data);
+        }
+      }
+      setSubCategories(allSubCats);
+    } catch (err: any) {
+      setSubCatError(err?.message || "Failed to fetch subcategories");
+    } finally {
+      setSubCatLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      if (accessToken && userData?.employee.id) {
+        await getEmployeeDetail();
+      }
+    };
+    fetchAll();
+  }, []);
+
+  useEffect(() => {
+    if (employeeData?.policies && employeeData.policies.length > 0) {
+      fetchCategories();
+
+      const uniqueCatIds = Array.from(
+        new Set(employeeData.policies.map((p) => p.category_id))
+      );
+      fetchSubCategories(uniqueCatIds);
+    }
+  }, [employeeData]);
+
+  const getCategoryName = (id: number) => {
+    const cat = categories.find((c) => c.id === id);
+    return cat ? cat.name : "-";
+  };
+
+  const getSubCategoryName = (id: number) => {
+    const sub = subCategories.find((s) => s.id === id);
+    return sub ? sub.name : "-";
+  };
+
+  const getStatusText = (status: string | number) => {
+    switch (String(status)) {
+      case "1":
+        return "Pending";
+      case "2":
+        return "Process";
+      case "3":
+        return "Complete";
+      case "4":
+        return "Approved";
+      default:
+        return String(status);
+    }
+  };
+
+  const policiesWithNames = (employeeData?.policies || []).map((policy) => ({
+    ...policy,
+    category_name:
+      categories.find((c) => c.id === policy.category_id)?.name || "-",
+    sub_category_name:
+      subCategories.find((s) => s.id === policy.sub_category_id)?.name || "-",
+    status_text: getStatusText(policy.status),
+  }));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -127,51 +261,138 @@ const PolicyListScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {policies.map((policy) => (
-          <TouchableOpacity
-            key={policy.id}
-            style={styles.policyCard}
-            onPress={() => handlePolicyPress(policy)}
-            activeOpacity={0.7}
+        {loading || catLoading || subCatLoading ? (
+          <ActivityIndicator
+            size="large"
+            color="#3B82F6"
+            style={{ marginTop: 40 }}
+          />
+        ) : error ? (
+          <Text
+            style={{ textAlign: "center", color: "#EF4444", marginTop: 20 }}
           >
-            <View style={styles.cardHeader}>
-              <Text style={styles.policyName} numberOfLines={2}>
-                {policy.name}
-              </Text>
-              <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: getStatusBgColor(policy.status) },
-                ]}
+            {error}
+          </Text>
+        ) : catError ? (
+          <Text
+            style={{ textAlign: "center", color: "#EF4444", marginTop: 20 }}
+          >
+            {catError}
+          </Text>
+        ) : subCatError ? (
+          <Text
+            style={{ textAlign: "center", color: "#EF4444", marginTop: 20 }}
+          >
+            {subCatError}
+          </Text>
+        ) : policiesWithNames.length > 0 ? (
+          policiesWithNames.map((policy) => (
+            <View
+              key={policy.id}
+              style={[
+                styles.policyCard,
+                {
+                  padding: 24,
+                  borderLeftWidth: 4,
+                  borderLeftColor: "#3B82F6",
+                  marginBottom: 20,
+                },
+              ]}
+            >
+              <View style={{ marginBottom: 16 }}>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "700",
+                    color: "#1F2937",
+                    marginBottom: 8,
+                  }}
+                >
+                  {policy.category_name}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: "#6366F1",
+                    fontWeight: "600",
+                    marginBottom: 4,
+                  }}
+                >
+                  {policy.sub_category_name}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 8,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: "#6B7280",
+                      fontWeight: "500",
+                      marginRight: 8,
+                    }}
+                  >
+                    Status:
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: "#10B981",
+                      fontWeight: "700",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {policy.status_text}
+                  </Text>
+                </View>
+                <Text
+                  style={{ fontSize: 13, color: "#6B7280", fontWeight: "500" }}
+                >
+                  Created:{" "}
+                  <Text style={{ color: "#1F2937", fontWeight: "600" }}>
+                    {formatDate(policy.created_at)}
+                  </Text>
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#3B82F6",
+                  paddingVertical: 10,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  marginTop: 8,
+                  shadowColor: "#3B82F6",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 4,
+                  elevation: 2,
+                }}
+                onPress={() => handlePolicyPress(policy)}
+                activeOpacity={0.8}
               >
                 <Text
-                  style={[
-                    styles.statusText,
-                    { color: getStatusColor(policy.status) },
-                  ]}
+                  style={{
+                    color: "#fff",
+                    fontWeight: "700",
+                    fontSize: 15,
+                    letterSpacing: 1,
+                  }}
                 >
-                  {policy.status}
+                  View
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.cardBody}>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Policy Holder</Text>
-                <Text style={styles.infoValue} numberOfLines={1}>
-                  {policy.holderName}
-                </Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Created</Text>
-                <Text style={styles.infoValue}>
-                  {formatDate(policy.createdAt)}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+          ))
+        ) : (
+          <Text
+            style={{ textAlign: "center", color: "#6B7280", marginTop: 20 }}
+          >
+            No policies found.
+          </Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

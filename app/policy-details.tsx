@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useLocalSearchParams } from "expo-router";
 
 interface PolicyData {
   client: string;
@@ -29,16 +30,15 @@ interface PolicyDetailScreenProps {
 const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
   navigation,
 }) => {
-  const policyData: PolicyData = {
-    client: "Phukan",
-    employee: "QWE",
-    category: "Health Insurance",
-    subCategory: "1Cr. Family Insurance",
-    plan_amount: 0,
-    status: 1,
-    date: "2025-05-15",
-    time: "12:45 PM",
-  };
+  const { policy } = useLocalSearchParams();
+  let policyData: any = null;
+  try {
+    policyData = policy
+      ? JSON.parse(Array.isArray(policy) ? policy[0] : policy)
+      : null;
+  } catch (e) {
+    policyData = null;
+  }
 
   const getStatusInfo = (status: number) => {
     switch (status) {
@@ -73,12 +73,29 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
     }
   };
 
-  const statusInfo = getStatusInfo(policyData.status);
+  // fallback color for status
+  const statusColor = {
+    Approved: {
+      text: "Approved",
+      color: "#10B981",
+      backgroundColor: "#D1FAE5",
+    },
+    Complete: {
+      text: "Complete",
+      color: "#6366F1",
+      backgroundColor: "#E0E7FF",
+    },
+    Process: { text: "Process", color: "#F59E0B", backgroundColor: "#FEF3C7" },
+    Pending: { text: "Pending", color: "#F59E0B", backgroundColor: "#FEF3C7" },
+    default: { text: "Unknown", color: "#6B7280", backgroundColor: "#F3F4F6" },
+  };
+  const statusInfo =
+    statusColor[policyData?.status_text as keyof typeof statusColor] ||
+    statusColor.default;
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
-
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -94,7 +111,6 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
           </Text>
         </View>
       </View>
-
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -104,7 +120,9 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
             <View style={styles.titleRow}>
               <View style={styles.titleContainer}>
                 <Icon name="security" size={20} color="#2563EB" />
-                <Text style={styles.cardTitle}>{policyData.category}</Text>
+                <Text style={styles.cardTitle}>
+                  {policyData?.category_name || "-"}
+                </Text>
               </View>
               <View
                 style={[
@@ -117,103 +135,24 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
                 </Text>
               </View>
             </View>
-            <Text style={styles.subCategoryText}>{policyData.subCategory}</Text>
+            <Text style={styles.subCategoryText}>
+              {policyData?.sub_category_name || "-"}
+            </Text>
           </View>
-
           <View style={styles.cardContent}>
-            <View style={styles.infoRow}>
-              <View style={[styles.infoCard, styles.clientCard]}>
-                <Icon name="person" size={20} color="#2563EB" />
-                <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Client</Text>
-                  <Text style={styles.infoValue}>{policyData.client}</Text>
-                </View>
-              </View>
-              <View style={[styles.infoCard, styles.employeeCard]}>
-                <Icon name="group" size={20} color="#059669" />
-                <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Employee</Text>
-                  <Text style={styles.infoValue}>{policyData.employee}</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.separator} />
-
-            <View style={styles.amountCard}>
-              <View style={styles.amountInfo}>
-                <Icon name="attach-money" size={24} color="#7C3AED" />
-                <View>
-                  <Text style={styles.amountLabel}>Plan Amount</Text>
-                  <Text style={styles.amountValue}>
-                    {formatAmount(policyData.plan_amount)}
+            {policyData &&
+              Object.entries(policyData).map(([key, value]) => (
+                <View style={styles.detailRow} key={key}>
+                  <Text style={styles.detailLabel}>
+                    {key
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase())}
+                    :
                   </Text>
+                  <Text style={styles.detailValue}>{String(value)}</Text>
                 </View>
-              </View>
-              {policyData.plan_amount === 0 && (
-                <View style={styles.freeBadge}>
-                  <Text style={styles.freeBadgeText}>No Premium</Text>
-                </View>
-              )}
-            </View>
-
-            <View style={styles.separator} />
-
-            <View style={styles.infoRow}>
-              <View style={styles.dateTimeInfo}>
-                <Icon name="event" size={20} color="#6B7280" />
-                <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Date</Text>
-                  <Text style={styles.infoValue}>{policyData.date}</Text>
-                </View>
-              </View>
-              <View style={styles.dateTimeInfo}>
-                <Icon name="access-time" size={20} color="#6B7280" />
-                <View style={styles.infoTextContainer}>
-                  <Text style={styles.infoLabel}>Time</Text>
-                  <Text style={styles.infoValue}>{policyData.time}</Text>
-                </View>
-              </View>
-            </View>
+              ))}
           </View>
-        </View>
-
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <View style={styles.titleContainer}>
-              <Icon name="description" size={20} color="#6B7280" />
-              <Text style={styles.cardTitle}>Policy Information</Text>
-            </View>
-          </View>
-          <View style={styles.cardContent}>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Policy Type:</Text>
-              <Text style={styles.detailValue}>{policyData.category}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Coverage:</Text>
-              <Text style={styles.detailValue}>{policyData.subCategory}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Policy Holder:</Text>
-              <Text style={styles.detailValue}>{policyData.client}</Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Assigned Employee:</Text>
-              <Text style={styles.detailValue}>{policyData.employee}</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.primaryButton} activeOpacity={0.8}>
-            <Icon name="description" size={16} color="#FFFFFF" />
-            <Text style={styles.primaryButtonText}>View Documents</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.8}>
-            <Icon name="security" size={16} color="#374151" />
-            <Text style={styles.secondaryButtonText}>Claim History</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

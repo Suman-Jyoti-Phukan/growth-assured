@@ -19,6 +19,8 @@ export default function BranchManager() {
 
   const { parentId } = useLocalSearchParams();
 
+  console.log(parentId);
+
   const { accessToken } = useAuth();
 
   const [branchManagers, setBranchManagers] = useState<IBaseEmployeeType[]>([]);
@@ -26,6 +28,8 @@ export default function BranchManager() {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState<string | null>(null);
+
+  console.log("Branch Manager", branchManagers);
 
   useEffect(() => {
     async function fetchBranchManagers() {
@@ -41,6 +45,8 @@ export default function BranchManager() {
             },
           }
         );
+
+        console.log(response.data);
 
         setBranchManagers(response.data?.data || []);
 

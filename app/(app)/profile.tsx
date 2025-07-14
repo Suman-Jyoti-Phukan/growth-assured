@@ -11,7 +11,7 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 import { useAuth } from "@/context/AuthContext";
 
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -22,11 +22,116 @@ type InfoRowProps = {
   isLast?: boolean;
 };
 
-import { ReactNode } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+
+import axios from "axios";
+
+import { ROOT_URL } from "@/utils/routes";
+
+import SkeletonLoader from "@/components/skeleton-loader";
+
+// Types for employee data response
+interface Employee {
+  id: number;
+  unique_code: string;
+  name: string;
+  mobile: string;
+  email: string;
+  type: string;
+}
+
+interface BankDetails {
+  id: number;
+  employee_id: number;
+  name: string;
+  bank_name: string;
+  branch_name: string;
+  acc_no: string;
+  ifsc: string;
+  micr: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Policy {
+  id: number;
+  employee_id: number;
+  uu_id: string | null;
+  client_id: number;
+  category_id: number;
+  sub_category_id: number;
+  plan_amount: string;
+  gst_perc: string;
+  commission_amount: string;
+  status: string;
+  approved_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface EmployeeDataResponse {
+  status: boolean;
+  message: string;
+  error_code: boolean;
+  error_message: string | null;
+  data: Employee[];
+  bank_details: BankDetails | null;
+  drs_data: any[];
+  policies: Policy[];
+  app_writeup: any;
+}
 
 const Profile = () => {
-  const { logout } = useAuth();
+  const { logout, userData, accessToken } = useAuth();
+
   const router = useRouter();
+
+  const [employeeData, setEmployeeData] = useState<EmployeeDataResponse | null>(
+    null
+  );
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
+
+  const getEmployeeDetail = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(
+        `${ROOT_URL}/employee/fetchEmployee`,
+        {
+          employee_id: userData?.employee.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      console.log("Response Data", JSON.stringify(response.data, null, 2));
+      setEmployeeData(response.data);
+    } catch (error: any) {
+      console.log(error);
+      setError(error?.message || "Failed to fetch employee details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (accessToken && userData?.employee.id) {
+      getEmployeeDetail();
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (accessToken && userData?.employee.id) {
+        getEmployeeDetail();
+      }
+    }, [accessToken, userData?.employee.id])
+  );
 
   const handleLogout = async () => {
     try {
@@ -38,9 +143,16 @@ const Profile = () => {
   };
 
   const handleEditProfile = () => {
-    // Navigate to edit profile screen
     router.push("/edit-profile");
   };
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+
+  if (error) {
+    return <Text>Error fetching data. Please try again.</Text>;
+  }
 
   const InfoCard = ({
     title,
@@ -67,11 +179,10 @@ const Profile = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
           <Image
-            source={require("../../assets/images/avatar.png")}
+            source={require("../../assets/images/account.png")}
             style={styles.avatar}
           />
           <TouchableOpacity style={styles.editAvatarButton}>
@@ -79,9 +190,9 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.name}>John Doe</Text>
-        <Text style={styles.email}>john.doe@example.com</Text>
-        <Text style={styles.designation}>Senior Software Engineer</Text>
+        <Text style={styles.name}>{userData?.employee.name}</Text>
+        <Text style={styles.email}>{userData?.employee.email}</Text>
+        {/* <Text style={styles.designation}>Senior Software Engineer</Text> */}
 
         <TouchableOpacity
           style={styles.editProfileButton}
@@ -92,69 +203,52 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Personal Information */}
       <InfoCard title="Personal Information">
-        <InfoRow icon="person-outline" label="Employee ID" value="EMP001" />
-        <InfoRow icon="call-outline" label="Phone" value="+1 (555) 123-4567" />
         <InfoRow
-          icon="location-outline"
-          label="Address"
-          value="123 Main St, City, State"
+          icon="person-outline"
+          label="Employee ID"
+          value={userData?.employee.unique_code as string}
         />
+
         <InfoRow
-          icon="calendar-outline"
-          label="Date of Birth"
-          value="January 15, 1990"
-          isLast
+          icon="call-outline"
+          label="Phone"
+          value={userData?.employee.mobile as string}
         />
       </InfoCard>
 
-      {/* Bank Details */}
-      <InfoCard title="Bank Details">
-        <InfoRow icon="card-outline" label="Account Holder" value="John Doe" />
-        <InfoRow icon="business-outline" label="Bank Name" value="Chase Bank" />
-        <InfoRow
-          icon="keypad-outline"
-          label="Account Number"
-          value="****-****-1234"
-        />
-        <InfoRow icon="copy-outline" label="IFSC CODE" value="021000021" />
-        <InfoRow
-          icon="wallet-outline"
-          label="MICR"
-          value="HIMUBURI225"
-          isLast
-        />
-      </InfoCard>
+      {employeeData?.bank_details && (
+        <InfoCard title="Bank Details">
+          <InfoRow
+            icon="card-outline"
+            label="Account Holder"
+            value={employeeData.bank_details.name}
+          />
+          <InfoRow
+            icon="business-outline"
+            label="Bank Name"
+            value={employeeData.bank_details.bank_name}
+          />
+          <InfoRow
+            icon="keypad-outline"
+            label="Account Number"
+            value={employeeData.bank_details.acc_no}
+          />
+          <InfoRow
+            icon="copy-outline"
+            label="IFSC CODE"
+            value={employeeData.bank_details.ifsc}
+          />
+          <InfoRow
+            icon="wallet-outline"
+            label="MICR"
+            value={employeeData.bank_details.micr}
+            isLast
+          />
+        </InfoCard>
+      )}
 
-      {/* Employment Details */}
-      <InfoCard title="Employment Details">
-        <InfoRow
-          icon="briefcase-outline"
-          label="Department"
-          value="Engineering"
-        />
-        <InfoRow icon="time-outline" label="Join Date" value="March 15, 2022" />
-        <InfoRow
-          icon="trending-up-outline"
-          label="Experience"
-          value="5 years"
-        />
-        <InfoRow
-          icon="star-outline"
-          label="Employee Type"
-          value="Full-time"
-          isLast
-        />
-      </InfoCard>
-
-      {/* Action Buttons */}
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.secondaryButton}>
-          <Ionicons name="settings-outline" size={20} color="#6B7280" />
-          <Text style={styles.secondaryButtonText}>Settings</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#FFF" />
           <Text style={styles.logoutButtonText}>Logout</Text>

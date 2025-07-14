@@ -116,6 +116,81 @@ export default function AppLayout() {
         />
 
         <Drawer.Screen
+          name="branch-manager"
+          options={{
+            title: "Branch Manager",
+            drawerLabel: showBranchManager ? "Branch Manager" : "Hidden",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="business" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: showBranchManager ? undefined : "none",
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="sale-manager"
+          options={{
+            title: "Sale Manager",
+            drawerLabel: showSaleManager ? "Sale Manager" : "Hidden",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="trending-up" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: showSaleManager ? undefined : "none",
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="financial-planner"
+          options={{
+            title: "Financial Planner",
+            drawerLabel: showFinancialPlanner ? "Financial Planner" : "Hidden",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="calculator" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: showFinancialPlanner ? undefined : "none",
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="regional-manager"
+          options={{
+            title: "Regional Manager",
+            drawerLabel: showRegionalPlanner ? "Regional Manager" : "Hidden",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="map" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: showRegionalPlanner ? undefined : "none",
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
+          name="area-sales-manager"
+          options={{
+            title: "Area Sales Manager",
+            drawerLabel: showAreaSaleManager ? "Area Sales Manager" : "Hidden",
+            drawerIcon: ({ color, size }) => (
+              <Ionicons name="location" color={color} size={size} />
+            ),
+            drawerItemStyle: {
+              display: showAreaSaleManager ? undefined : "none",
+              borderRadius: 2,
+            },
+          }}
+        />
+
+        <Drawer.Screen
           name="policy"
           options={{
             drawerLabel: "Policy",
@@ -315,81 +390,6 @@ export default function AppLayout() {
             drawerLabel: "Hidden",
             title: "Policy Holder",
             drawerItemStyle: { display: "none" },
-          }}
-        />
-
-        <Drawer.Screen
-          name="branch-manager"
-          options={{
-            title: "Branch Manager",
-            drawerLabel: showBranchManager ? "Branch Manager" : "Hidden",
-            drawerIcon: ({ color, size }) => (
-              <Ionicons name="business" color={color} size={size} />
-            ),
-            drawerItemStyle: {
-              display: showBranchManager ? undefined : "none",
-              borderRadius: 2,
-            },
-          }}
-        />
-
-        <Drawer.Screen
-          name="sale-manager"
-          options={{
-            title: "Sale Manager",
-            drawerLabel: showSaleManager ? "Sale Manager" : "Hidden",
-            drawerIcon: ({ color, size }) => (
-              <Ionicons name="trending-up" color={color} size={size} />
-            ),
-            drawerItemStyle: {
-              display: showSaleManager ? undefined : "none",
-              borderRadius: 2,
-            },
-          }}
-        />
-
-        <Drawer.Screen
-          name="financial-planner"
-          options={{
-            title: "Financial Planner",
-            drawerLabel: showFinancialPlanner ? "Financial Planner" : "Hidden",
-            drawerIcon: ({ color, size }) => (
-              <Ionicons name="calculator" color={color} size={size} />
-            ),
-            drawerItemStyle: {
-              display: showFinancialPlanner ? undefined : "none",
-              borderRadius: 2,
-            },
-          }}
-        />
-
-        <Drawer.Screen
-          name="regional-manager"
-          options={{
-            title: "Regional Manager",
-            drawerLabel: showRegionalPlanner ? "Regional Manager" : "Hidden",
-            drawerIcon: ({ color, size }) => (
-              <Ionicons name="map" color={color} size={size} />
-            ),
-            drawerItemStyle: {
-              display: showRegionalPlanner ? undefined : "none",
-              borderRadius: 2,
-            },
-          }}
-        />
-
-        <Drawer.Screen
-          name="area-sales-manager"
-          options={{
-            title: "Area Sales Manager",
-            drawerLabel: showAreaSaleManager ? "Area Sales Manager" : "Hidden",
-            drawerIcon: ({ color, size }) => (
-              <Ionicons name="location" color={color} size={size} />
-            ),
-            drawerItemStyle: {
-              display: showAreaSaleManager ? undefined : "none",
-              borderRadius: 2,
-            },
           }}
         />
 
