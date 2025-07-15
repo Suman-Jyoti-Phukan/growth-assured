@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   View,
@@ -10,7 +10,6 @@ import {
   ScrollView,
   Image,
   StatusBar,
-  Dimensions,
 } from "react-native";
 
 import { useFocusEffect, useRouter } from "expo-router";
@@ -21,8 +20,46 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 import { themeColors } from "../../utils/colors";
 
+import axios from "axios";
+
+import { ROOT_URL } from "@/utils/routes";
+
+import { useAuth } from "@/context/AuthContext";
+
 export default function Dashboard() {
   const router = useRouter();
+
+  const [employeeData, setEmployeeData] = useState();
+
+  const { accessToken, userData } = useAuth();
+
+  useEffect(() => {
+    async function fetchEmployeeData() {
+      try {
+        const response = await axios.post(
+          `${ROOT_URL}/employee/fetchEmployee`,
+          {
+            employee_id: userData?.employee.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log(JSON.stringify(response.data, null, 2));
+
+          return response.data;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchEmployeeData();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -67,13 +104,11 @@ export default function Dashboard() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContentContainer}
         >
-          {/* Header Section */}
           <View style={styles.header}>
             <Text style={styles.greeting}>Welcome back,</Text>
             <Text style={styles.userName}>Suman Jyoti Phukan</Text>
           </View>
 
-          {/* Banner Image with Overlay */}
           <View style={styles.bannerContainer}>
             <Image
               source={require("../../assets/images/banner.jpg")}
@@ -81,7 +116,6 @@ export default function Dashboard() {
             />
           </View>
 
-          {/* Action Buttons with Card-Style Design */}
           <View style={styles.actionContainer}>
             <TouchableOpacity
               style={styles.actionButton}
@@ -120,9 +154,6 @@ export default function Dashboard() {
             </TouchableOpacity>
           </View>
 
-          {/* Quick Action Buttons */}
-
-          {/* Stats Cards */}
           <View style={styles.statsContainer}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Performance Overview</Text>
@@ -177,7 +208,6 @@ export default function Dashboard() {
             </View>
           </View>
 
-          {/* Recent Activity Section - Enlarged */}
           <View style={styles.recentActivityContainer}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Recent Activity</Text>
@@ -186,7 +216,6 @@ export default function Dashboard() {
               </TouchableOpacity>
             </View>
 
-            {/* Activity item */}
             <View style={styles.activityItem}>
               <View
                 style={[
@@ -205,7 +234,6 @@ export default function Dashboard() {
               </View>
             </View>
 
-            {/* Activity item */}
             <View style={styles.activityItem}>
               <View
                 style={[
@@ -224,7 +252,6 @@ export default function Dashboard() {
               </View>
             </View>
 
-            {/* Activity item */}
             <View style={styles.activityItem}>
               <View
                 style={[

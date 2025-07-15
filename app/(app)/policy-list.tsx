@@ -45,7 +45,7 @@ interface CategoryWithSubcategories extends PolicyCategory {
 }
 
 export default function PolicyCategoriesList() {
-  const { accessToken } = useAuth();
+  const { accessToken, userData } = useAuth();
 
   const [categoriesWithSubcategories, setCategoriesWithSubcategories] =
     useState<CategoryWithSubcategories[]>([]);

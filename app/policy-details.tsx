@@ -9,16 +9,51 @@ import {
   SafeAreaView,
   StatusBar,
 } from "react-native";
+
 import Icon from "react-native-vector-icons/MaterialIcons";
+
 import { useLocalSearchParams } from "expo-router";
 
+// Status text helper (copied from policy list)
+const getStatusText = (status: string | number) => {
+  switch (String(status)) {
+    case "1":
+      return "Pending";
+    case "2":
+      return "Process";
+    case "3":
+      return "Complete";
+    case "4":
+      return "Approved";
+    default:
+      return String(status);
+  }
+};
+
+const statusColor = {
+  Approved: {
+    text: "Approved",
+    color: "#10B981",
+    backgroundColor: "#D1FAE5",
+  },
+  Complete: {
+    text: "Complete",
+    color: "#6366F1",
+    backgroundColor: "#E0E7FF",
+  },
+  Process: { text: "Process", color: "#F59E0B", backgroundColor: "#FEF3C7" },
+  Pending: { text: "Pending", color: "#F59E0B", backgroundColor: "#FEF3C7" },
+  default: { text: "Unknown", color: "#6B7280", backgroundColor: "#F3F4F6" },
+};
+
 interface PolicyData {
+  id: number;
   client: string;
   employee: string;
   category: string;
   subCategory: string;
-  plan_amount: number;
-  status: number;
+  plan_amount: string;
+  status: string;
   date: string;
   time: string;
 }
@@ -31,7 +66,9 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
   navigation,
 }) => {
   const { policy } = useLocalSearchParams();
-  let policyData: any = null;
+
+  let policyData: PolicyData | null = null;
+
   try {
     policyData = policy
       ? JSON.parse(Array.isArray(policy) ? policy[0] : policy)
@@ -40,31 +77,14 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
     policyData = null;
   }
 
-  const getStatusInfo = (status: number) => {
-    switch (status) {
-      case 1:
-        return {
-          text: "Active",
-          color: "#10B981",
-          backgroundColor: "#D1FAE5",
-        };
-      case 0:
-        return {
-          text: "Inactive",
-          color: "#EF4444",
-          backgroundColor: "#FEE2E2",
-        };
-      default:
-        return {
-          text: "Unknown",
-          color: "#6B7280",
-          backgroundColor: "#F3F4F6",
-        };
-    }
-  };
+  const statusText = getStatusText(policyData?.status ?? "");
 
-  const formatAmount = (amount: number): string => {
-    return amount === 0 ? "Free" : `₹${amount.toLocaleString()}`;
+  const statusInfo =
+    statusColor[statusText as keyof typeof statusColor] || statusColor.default;
+
+  const formatAmount = (amount: string): string => {
+    const num = Number(amount);
+    return isNaN(num) ? amount : `₹${num.toLocaleString()}`;
   };
 
   const handleGoBack = () => {
@@ -72,26 +92,6 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
       navigation.goBack();
     }
   };
-
-  // fallback color for status
-  const statusColor = {
-    Approved: {
-      text: "Approved",
-      color: "#10B981",
-      backgroundColor: "#D1FAE5",
-    },
-    Complete: {
-      text: "Complete",
-      color: "#6366F1",
-      backgroundColor: "#E0E7FF",
-    },
-    Process: { text: "Process", color: "#F59E0B", backgroundColor: "#FEF3C7" },
-    Pending: { text: "Pending", color: "#F59E0B", backgroundColor: "#FEF3C7" },
-    default: { text: "Unknown", color: "#6B7280", backgroundColor: "#F3F4F6" },
-  };
-  const statusInfo =
-    statusColor[policyData?.status_text as keyof typeof statusColor] ||
-    statusColor.default;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -121,7 +121,7 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
               <View style={styles.titleContainer}>
                 <Icon name="security" size={20} color="#2563EB" />
                 <Text style={styles.cardTitle}>
-                  {policyData?.category_name || "-"}
+                  {policyData?.category || "-"}
                 </Text>
               </View>
               <View
@@ -136,22 +136,38 @@ const PolicyDetailScreen: React.FC<PolicyDetailScreenProps> = ({
               </View>
             </View>
             <Text style={styles.subCategoryText}>
-              {policyData?.sub_category_name || "-"}
+              {policyData?.subCategory || "-"}
             </Text>
           </View>
           <View style={styles.cardContent}>
-            {policyData &&
-              Object.entries(policyData).map(([key, value]) => (
-                <View style={styles.detailRow} key={key}>
-                  <Text style={styles.detailLabel}>
-                    {key
-                      .replace(/_/g, " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}
-                    :
-                  </Text>
-                  <Text style={styles.detailValue}>{String(value)}</Text>
-                </View>
-              ))}
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Client:</Text>
+              <Text style={styles.detailValue}>
+                {policyData?.client || "-"}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Employee:</Text>
+              <Text style={styles.detailValue}>
+                {policyData?.employee || "-"}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Plan Amount:</Text>
+              <Text style={styles.detailValue}>
+                {formatAmount(policyData?.plan_amount || "0")}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Status:</Text>
+              <Text style={styles.detailValue}>{statusText}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Date:</Text>
+              <Text style={styles.detailValue}>
+                {policyData?.date || "-"} {policyData?.time || "-"}
+              </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
