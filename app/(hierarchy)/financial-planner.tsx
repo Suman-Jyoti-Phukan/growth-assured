@@ -72,7 +72,7 @@ export default function FinancialPlannerScreen() {
       <Text style={styles.contact}>✉️ planner@example.com</Text>
 
       <View style={{ flexDirection: "row", gap: 10 }}>
-        <Pressable
+        {/* <Pressable
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
             e.stopPropagation();
@@ -80,7 +80,7 @@ export default function FinancialPlannerScreen() {
           }}
         >
           <Text style={styles.buttonText}>Login</Text>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}

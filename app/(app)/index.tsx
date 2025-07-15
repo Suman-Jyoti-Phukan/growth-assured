@@ -29,7 +29,11 @@ import { useAuth } from "@/context/AuthContext";
 export default function Dashboard() {
   const router = useRouter();
 
-  const [employeeData, setEmployeeData] = useState();
+  const [employeeData, setEmployeeData] = useState<any>();
+
+  const [loginPolicies, setLoginPolicies] = useState<number>(0);
+
+  const [issuePolicies, setIssuePolicies] = useState<number>(0);
 
   const { accessToken, userData } = useAuth();
 
@@ -49,9 +53,7 @@ export default function Dashboard() {
         );
 
         if (response.status === 200) {
-          console.log(JSON.stringify(response.data, null, 2));
-
-          return response.data;
+          setEmployeeData(response.data);
         }
       } catch (error) {
         console.log(error);
@@ -60,6 +62,25 @@ export default function Dashboard() {
 
     fetchEmployeeData();
   }, []);
+
+  useEffect(() => {
+    if (employeeData && Array.isArray(employeeData.policies)) {
+      let loginCount = 0;
+      let issueCount = 0;
+      employeeData.policies.forEach((policy: any) => {
+        if (policy.status === "2") {
+          loginCount++;
+        } else if (policy.status === "3") {
+          issueCount++;
+        }
+      });
+      setLoginPolicies(loginCount);
+      setIssuePolicies(issueCount);
+    } else {
+      setLoginPolicies(0);
+      setIssuePolicies(0);
+    }
+  }, [employeeData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -106,7 +127,7 @@ export default function Dashboard() {
         >
           <View style={styles.header}>
             <Text style={styles.greeting}>Welcome back,</Text>
-            <Text style={styles.userName}>Suman Jyoti Phukan</Text>
+            <Text style={styles.userName}>{userData?.employee.name}</Text>
           </View>
 
           <View style={styles.bannerContainer}>
@@ -162,7 +183,7 @@ export default function Dashboard() {
             <View style={styles.statsCardsRow}>
               <View style={styles.statsCard}>
                 <View style={styles.statContent}>
-                  <Text style={styles.statAmount}>₹120,000</Text>
+                  <Text style={styles.statAmount}>{loginPolicies}</Text>
                   <Text style={styles.statLabel}>Login</Text>
                 </View>
                 <View style={styles.statIconWrapper}>
@@ -185,7 +206,7 @@ export default function Dashboard() {
 
               <View style={styles.statsCard}>
                 <View style={styles.statContent}>
-                  <Text style={styles.statAmount}>₹880,000</Text>
+                  <Text style={styles.statAmount}>{issuePolicies}</Text>
                   <Text style={styles.statLabel}>Issued</Text>
                 </View>
                 <View style={styles.statIconWrapper}>

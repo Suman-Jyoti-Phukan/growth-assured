@@ -25,7 +25,7 @@ export default function FinancialPlanner() {
         <Text style={styles.contact}>✉️ {userData?.employee.email}</Text>
 
         <View style={{ flexDirection: "row", gap: 10 }}>
-          <Pressable
+          {/* <Pressable
             style={({ pressed }) => [
               styles.button,
               pressed && { opacity: 0.9 },
@@ -41,7 +41,7 @@ export default function FinancialPlanner() {
             }}
           >
             <Text style={styles.buttonText}>Login</Text>
-          </Pressable>
+          </Pressable> */}
 
           <Pressable
             style={({ pressed }) => [

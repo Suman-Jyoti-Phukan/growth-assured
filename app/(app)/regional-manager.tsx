@@ -36,7 +36,7 @@ export default function RegionalManager() {
             <Text style={styles.buttonText}>View Details</Text>
           </Pressable>
 
-          <Pressable
+          {/* <Pressable
             style={({ pressed }) => [
               styles.button,
               pressed && { opacity: 0.9 },
@@ -52,7 +52,7 @@ export default function RegionalManager() {
             }}
           >
             <Text style={styles.buttonText}>Login</Text>
-          </Pressable>
+          </Pressable> */}
 
           <Pressable
             style={({ pressed }) => [

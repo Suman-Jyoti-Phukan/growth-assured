@@ -39,7 +39,7 @@ export default function AreaSalesManager() {
           <Text style={styles.buttonText}>View Details</Text>
         </Pressable>
 
-        <Pressable
+        {/* <Pressable
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
           onPress={(e) => {
             e.stopPropagation();
@@ -47,7 +47,7 @@ export default function AreaSalesManager() {
           }}
         >
           <Text style={styles.buttonText}>Login</Text>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable
           style={({ pressed }) => [styles.button, pressed && { opacity: 0.9 }]}
