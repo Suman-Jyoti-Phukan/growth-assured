@@ -1,4 +1,5 @@
 import { DocumentUpload } from "@/app/(app)/policy-holder";
+
 import { FontAwesome } from "@expo/vector-icons";
 
 import {
@@ -100,48 +101,64 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             {Object.keys(documentIcons).map((doc, index) => (
               <View key={index} style={reviewStyles.reviewItem}>
                 <Text style={reviewStyles.reviewItemLabel}>{doc}:</Text>
+
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={reviewStyles.reviewItemValue}>
                     {documentImages[doc] ? "Uploaded" : "Missing"}
                   </Text>
                   {documentImages[doc] && (
-                    <View
-                      style={{
-                        marginLeft: 10,
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      <FontAwesome
-                        name={
-                          documentVerification[doc]
-                            ? "check-circle"
-                            : "circle-o"
-                        }
-                        size={14}
-                        color={
-                          documentVerification[doc]
-                            ? COLORS.success
-                            : COLORS.lightText
-                        }
-                      />
-                      <Text
+                    <>
+                      <Image
+                        source={{ uri: documentImages[doc]?.uri }}
                         style={{
-                          marginLeft: 5,
-                          color: documentVerification[doc]
-                            ? COLORS.success
-                            : COLORS.lightText,
-                          fontSize: responsiveFontSize(1.6),
+                          width: 64,
+                          height: 64,
+                          borderRadius: 8,
+                          marginLeft: 10,
+                        }}
+                        resizeMode="cover"
+                      />
+                      <View
+                        style={{
+                          marginLeft: 10,
+                          flexDirection: "row",
+                          alignItems: "center",
                         }}
                       >
-                        {documentVerification[doc] ? "Verified" : "Unverified"}
-                      </Text>
-                    </View>
+                        <FontAwesome
+                          name={
+                            documentVerification[doc]
+                              ? "check-circle"
+                              : "circle-o"
+                          }
+                          size={14}
+                          color={
+                            documentVerification[doc]
+                              ? COLORS.success
+                              : COLORS.lightText
+                          }
+                        />
+                        <Text
+                          style={{
+                            marginLeft: 5,
+                            color: documentVerification[doc]
+                              ? COLORS.success
+                              : COLORS.lightText,
+                            fontSize: responsiveFontSize(1.6),
+                          }}
+                        >
+                          {documentVerification[doc]
+                            ? "Verified"
+                            : "Unverified"}
+                        </Text>
+                      </View>
+                    </>
                   )}
                 </View>
               </View>
             ))}
           </View>
+
           <View style={reviewStyles.reviewDisclaimer}>
             <FontAwesome
               name="info-circle"
@@ -154,6 +171,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             </Text>
           </View>
         </ScrollView>
+
         <View style={reviewStyles.reviewActions}>
           <TouchableOpacity
             style={[
@@ -226,9 +244,11 @@ const reviewStyles = StyleSheet.create({
   reviewItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
-    paddingBottom: 8,
+    alignItems: "center",
+    marginBottom: 0,
+    paddingBottom: 0,
+    minHeight: 70,
+    height: 90,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
   },
@@ -249,7 +269,7 @@ const reviewStyles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     borderRadius: 10,
     padding: 15,
-    marginTop: 10,
+    marginVertical: 10,
     alignItems: "flex-start",
   },
   reviewDisclaimerText: {

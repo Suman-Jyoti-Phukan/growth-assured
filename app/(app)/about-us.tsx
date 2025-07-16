@@ -115,7 +115,7 @@ export default function AboutUsComponent() {
         >
           <View style={styles.headerSection}>
             <Text style={styles.companyName}>
-              Growth Assured Insurance Brokers
+              Growth Assured Insurance Services
             </Text>
             {renderAnimatedTitle()}
           </View>

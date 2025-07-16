@@ -116,6 +116,11 @@ interface PolicyCategory {
   name: string;
 }
 
+interface PolicySubcategory {
+  id: string;
+  name: string;
+}
+
 /** SUMAN -> SUB CATEGORY LIST NOT PROVIDED BY ABHILASH .
  *  WARNING ::: REMINDER YOU HAVE TO MAP THE CATEGORY NAME WITH THE ID RELATED WITH THE CATEGORY, NOW YOU JUST ADDING THE NAME
  *  WARNING ::: VALUES ARE STATIC NOW FOR CATEGORY AND SUB CATEGORY
@@ -126,6 +131,8 @@ export default function PolicyHolderScreen() {
   const [policyCategoryList, setPolicyCategoryList] = useState<
     PolicyCategory[]
   >([]);
+
+  console.log(policyCategoryList);
 
   const [isPolicyCategoryListLoading, setIsPolicyCategoryListLoading] =
     useState(false);
@@ -161,7 +168,6 @@ export default function PolicyHolderScreen() {
     placeholderPersonalDetails
   );
 
-  // Helper to check if a field is still at its placeholder value
   const isPlaceholderValue = (field: string) =>
     formValues[field] === placeholderPersonalDetails[field];
 
@@ -197,9 +203,9 @@ export default function PolicyHolderScreen() {
   const [isPolicySubcategoryListLoading, setIsPolicySubcategoryListLoading] =
     useState(false);
 
-  const [policySubcategoryList, setPolicySubcategoryList] = useState<string[]>(
-    []
-  );
+  const [policySubcategoryList, setPolicySubcategoryList] = useState<
+    PolicySubcategory[]
+  >([]);
 
   const getSubcategoryList = async (categoryId: string) => {
     try {
@@ -219,7 +225,7 @@ export default function PolicyHolderScreen() {
 
       const data = response.data.data;
 
-      setPolicySubcategoryList(data);
+      setPolicySubcategoryList(data); // data should be an array of { id, name }
     } catch (err) {
       console.error("Failed to fetch subcategory list:", err);
       Alert.alert("Error", "Failed to load subcategories. Please try again.");
@@ -309,7 +315,7 @@ export default function PolicyHolderScreen() {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [6, 3],
+        aspect: [9, 16],
         quality: 0.8,
       });
 
@@ -400,9 +406,25 @@ export default function PolicyHolderScreen() {
 
     const formData = new FormData();
 
-    formData.append("category_id", "1");
+    // Find the selected category and subcategory objects
+    const selectedCategoryObj = policyCategoryList.find(
+      (cat) => cat.name === selectedCategory
+    );
+    const selectedCategoryId = selectedCategoryObj?.id ?? "";
 
-    formData.append("sub_category_id", "1");
+    // If subcategories are objects with id and name
+    const selectedSubcategoryObj = policySubcategoryList.find(
+      (sub) => sub.name === selectedSubcategory
+    );
+    const selectedSubcategoryId = selectedSubcategoryObj?.id ?? "";
+
+    console.log("Select Category Id", selectedCategoryId);
+
+    console.log("Select Sub Category Id", selectedSubcategoryId);
+
+    formData.append("category_id", selectedCategoryId);
+
+    formData.append("sub_category_id", selectedSubcategoryId);
 
     Object.entries({
       mobile: formValues["Phone No."],
@@ -443,8 +465,6 @@ export default function PolicyHolderScreen() {
       }
     });
 
-    console.log(JSON.stringify(formData, null, 2));
-
     return formData;
   };
 
@@ -477,6 +497,15 @@ export default function PolicyHolderScreen() {
           "Your application has been submitted successfully. You will receive a confirmation email shortly.",
           [{ text: "OK" }]
         );
+
+        // Reset all form states after successful submit
+        setSelectedCategory("");
+        setSelectedSubcategory("");
+        setFormValues(placeholderPersonalDetails);
+        setDocumentImages({});
+        setDocumentVerification({});
+        setCurrentPhase(0);
+        setPolicySubcategoryList([]);
 
         return router.push("/");
       } else {

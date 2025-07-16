@@ -45,7 +45,7 @@ export default function Login() {
       await login(email, password);
       router.replace("/(app)");
     } catch (err) {
-      console.error(err);
+      console.log(err);
       setError(
         err instanceof Error
           ? err.message
@@ -216,8 +216,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   error: {
-    color: "red",
+    color: "#fff",
+    fontWeight: 600,
     marginBottom: 15,
     textAlign: "center",
+    backgroundColor: "#ff758f",
+    borderRadius: 10,
+    padding: 20,
   },
 });

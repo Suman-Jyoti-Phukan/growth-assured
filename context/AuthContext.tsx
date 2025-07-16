@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error(data?.message || "Login failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.log("Login error:", error);
       throw error;
     }
   };

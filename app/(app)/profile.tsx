@@ -199,7 +199,7 @@ const Profile = () => {
           onPress={handleEditProfile}
         >
           <Ionicons name="create-outline" size={20} color="#6366F1" />
-          <Text style={styles.editProfileText}>Edit Profile</Text>
+          <Text style={styles.editProfileText}>Edit / Add Bank Details</Text>
         </TouchableOpacity>
       </View>
 
@@ -217,7 +217,7 @@ const Profile = () => {
         />
       </InfoCard>
 
-      {employeeData?.bank_details && (
+      {employeeData?.bank_details ? (
         <InfoCard title="Bank Details">
           <InfoRow
             icon="card-outline"
@@ -246,6 +246,40 @@ const Profile = () => {
             isLast
           />
         </InfoCard>
+      ) : (
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+            backgroundColor: "#F1F5FF",
+            borderRadius: 12,
+            marginVertical: 20,
+            marginHorizontal: 16,
+            borderWidth: 1,
+            borderColor: "#E5E7EB",
+          }}
+        >
+          <Text
+            style={{
+              color: "#5B67CA",
+              fontWeight: "600",
+              fontSize: 16,
+              marginBottom: 8,
+            }}
+          >
+            No Bank Details Added
+          </Text>
+          <Text
+            style={{
+              color: "#9A9AB0",
+              fontSize: 14,
+              textAlign: "center",
+            }}
+          >
+            Please add your bank details to enable payouts and other features.
+          </Text>
+        </View>
       )}
 
       <View style={styles.actionButtons}>
