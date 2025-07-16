@@ -88,25 +88,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         password,
       });
 
-      if (!response.status || !response.data) {
-        throw new Error(response.data?.message || "Login failed");
-      }
-
       const data = response.data;
 
-      console.log("Login Data...", JSON.stringify(data, null, 2));
+      if (response.status === 200 && data.status === true) {
+        console.log("Login Data...", JSON.stringify(data, null, 2));
 
-      await SecureStore.setItemAsync("authToken", data.access_token);
+        await SecureStore.setItemAsync("authToken", data.access_token);
+        await SecureStore.setItemAsync("userData", JSON.stringify(data.data));
 
-      await SecureStore.setItemAsync("userData", JSON.stringify(data.data));
-
-      setAccessToken(data.access_token);
-
-      setUserData(data.data);
-
-      setIsAuthenticated(true);
-
-      return;
+        setAccessToken(data.access_token);
+        setUserData(data.data);
+        setIsAuthenticated(true);
+      } else {
+        throw new Error(data?.message || "Login failed");
+      }
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -126,7 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       setAccessToken(null);
     } catch (error) {
-      console.error("Logout error:", error);
+      console.log("error", error);
     }
   };
 

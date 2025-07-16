@@ -16,6 +16,7 @@ interface FormFieldProps {
   onPress?: () => void;
   required?: boolean;
   isKeyboardTypeNumberic?: boolean;
+  isDateField?: boolean;
 }
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -34,45 +35,68 @@ export const FormField: React.FC<FormFieldProps> = ({
   onPress,
   required = false,
   isKeyboardTypeNumberic = false,
-}) => (
-  <View style={formFieldStyles.fieldContainer}>
-    <Text style={formFieldStyles.fieldLabel}>
-      {label} {required && <Text style={{ color: COLORS.error }}>*</Text>}
-    </Text>
-    <View style={formFieldStyles.inputWrapper}>
-      <View style={formFieldStyles.iconContainer}>
-        <FontAwesome name={iconName} size={16} color={COLORS.primary} />
-      </View>
-      {isDropdown ? (
-        <TouchableOpacity
-          style={formFieldStyles.dropdownInput}
-          onPress={onPress}
-          activeOpacity={0.7}
-        >
-          <Text
-            style={
-              value
-                ? formFieldStyles.inputText
-                : formFieldStyles.placeholderText
-            }
+  isDateField = false,
+}) => {
+  return (
+    <View style={formFieldStyles.fieldContainer}>
+      <Text style={formFieldStyles.fieldLabel}>
+        {label} {required && <Text style={{ color: COLORS.error }}>*</Text>}
+      </Text>
+      <View style={formFieldStyles.inputWrapper}>
+        <View style={formFieldStyles.iconContainer}>
+          <FontAwesome name={iconName} size={16} color={COLORS.primary} />
+        </View>
+        {isDropdown ? (
+          <TouchableOpacity
+            style={formFieldStyles.dropdownInput}
+            onPress={onPress}
+            activeOpacity={0.7}
           >
-            {value || placeholder}
-          </Text>
-          <FontAwesome name="chevron-down" size={14} color={COLORS.primary} />
-        </TouchableOpacity>
-      ) : (
-        <TextInput
-          style={formFieldStyles.textInput}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder || label}
-          placeholderTextColor={COLORS.lightText}
-          keyboardType={isKeyboardTypeNumberic ? "number-pad" : "default"}
-        />
+            <Text
+              style={
+                value
+                  ? formFieldStyles.inputText
+                  : formFieldStyles.placeholderText
+              }
+            >
+              {value || placeholder}
+            </Text>
+            <FontAwesome name="chevron-down" size={14} color={COLORS.primary} />
+          </TouchableOpacity>
+        ) : (
+          <TextInput
+            style={formFieldStyles.textInput}
+            value={value}
+            onChangeText={(text) => {
+              if (isDateField) {
+                // Only allow input matching YYYY-MM-DD
+                const formatted = text.replace(/[^0-9-]/g, "");
+                onChangeText && onChangeText(formatted);
+              } else {
+                onChangeText && onChangeText(text);
+              }
+            }}
+            placeholder={isDateField ? "YYYY-MM-DD" : placeholder || label}
+            placeholderTextColor={"#eee"}
+            keyboardType={
+              isDateField
+                ? "numbers-and-punctuation"
+                : isKeyboardTypeNumberic
+                ? "number-pad"
+                : "default"
+            }
+            maxLength={isDateField ? 10 : undefined}
+          />
+        )}
+      </View>
+      {isDateField && (
+        <Text style={{ color: COLORS.lightText, fontSize: 12, marginTop: 4 }}>
+          Format: YYYY-MM-DD
+        </Text>
       )}
     </View>
-  </View>
-);
+  );
+};
 
 const formFieldStyles = StyleSheet.create({
   fieldContainer: { marginBottom: 16 },

@@ -86,13 +86,29 @@ export interface DocumentUpload {
 }
 
 const requiredPersonalFields: string[] = [
+  "Phone No.",
   "Name",
   "DOB",
-  "Phone No.",
   "E-Mail Id",
+  "Identification mark",
   "Father's Name",
   "Mother's Name",
   "Address as per Proof",
+  "Landmark",
+  "Height",
+  "Weight",
+  "Place of Birth",
+  "Education Qualification",
+  "Nominee Name",
+  "Nominee DOB",
+  "Relationship",
+  "Name of Organisation",
+  "Type of Organisation",
+  "Designation",
+  "Workplace City",
+  "Annual CTC/Income",
+  "Existing Insurance Cover",
+  "Plan Amount",
 ];
 
 interface PolicyCategory {
@@ -116,7 +132,38 @@ export default function PolicyHolderScreen() {
 
   const [currentPhase, setCurrentPhase] = useState<number>(0);
 
-  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const placeholderPersonalDetails: Record<string, string> = {
+    "Phone No.": "",
+    Name: "",
+    DOB: "1990-01-01",
+    "E-Mail Id": "",
+    "Identification mark": "",
+    "Father's Name": "",
+    "Mother's Name": "",
+    "Address as per Proof": "",
+    Landmark: "",
+    Height: "",
+    Weight: "",
+    "Place of Birth": "",
+    "Education Qualification": "",
+    "Nominee Name": "",
+    "Nominee DOB": "1995-05-05",
+    Relationship: "",
+    "Name of Organisation": "",
+    "Type of Organisation": "",
+    Designation: "",
+    "Workplace City": "",
+    "Annual CTC/Income": "",
+    "Existing Insurance Cover": "",
+    "Plan Amount": "",
+  };
+  const [formValues, setFormValues] = useState<Record<string, string>>(
+    placeholderPersonalDetails
+  );
+
+  // Helper to check if a field is still at its placeholder value
+  const isPlaceholderValue = (field: string) =>
+    formValues[field] === placeholderPersonalDetails[field];
 
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
@@ -226,11 +273,14 @@ export default function PolicyHolderScreen() {
 
   const isPersonalDetailsComplete = (): boolean => {
     const missingFields = requiredPersonalFields.filter(
-      (field) => !formValues[field] || formValues[field].trim() === ""
+      (field) =>
+        !formValues[field] ||
+        formValues[field].trim() === "" ||
+        isPlaceholderValue(field)
     );
 
     if (missingFields.length > 0) {
-      console.log("Missing or empty fields:", missingFields);
+      console.log("Missing, empty, or placeholder fields:", missingFields);
       return false;
     }
 
@@ -377,6 +427,7 @@ export default function PolicyHolderScreen() {
       workplace: formValues["Workplace City"],
       annual_ctc: formValues["Annual CTC/Income"],
       existing_cover: formValues["Existing Insurance Cover"],
+      plan_amount: formValues["Plan Amount"],
     }).forEach(([key, value]) => {
       formData.append(key, value ?? "");
     });
@@ -391,6 +442,8 @@ export default function PolicyHolderScreen() {
         } as any);
       }
     });
+
+    console.log(JSON.stringify(formData, null, 2));
 
     return formData;
   };
@@ -412,6 +465,8 @@ export default function PolicyHolderScreen() {
         }
       );
 
+      console.log("Create Policy Holder Response", response);
+
       if (!response.data.data) {
         throw new Error("Error Fetching data.");
       }
@@ -428,7 +483,23 @@ export default function PolicyHolderScreen() {
         Alert.alert("Error", "Something went wrong. Please try again.");
       }
     } catch (error) {
-      console.error("Submission error:", error);
+      if (axios.isAxiosError(error)) {
+        // Log the full error response from the server, if available
+        console.log("Axios error response:", error.response);
+        console.log(
+          "Axios error data:",
+          JSON.stringify(error.response?.data, null, 2)
+        );
+        console.log(
+          "Axios error status:",
+          JSON.stringify(error.response?.status, null, 2)
+        );
+        console.log("Axios error headers:", error.response?.headers);
+      } else {
+        // Log any other errors
+        console.log("Non-Axios error:", error);
+      }
+
       Alert.alert(
         "Error",
         "Failed to submit your application. Please try again."

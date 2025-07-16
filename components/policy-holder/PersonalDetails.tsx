@@ -34,9 +34,16 @@ const icons: IconMap = {
   "Workplace City": "city",
   "Annual CTC/Income": "money",
   "Existing Insurance Cover": "shield",
+  "Plan Amount": "money",
 };
 
-const numbericFields = ["Phone No.", "Height", "Weight", "Annual CTC/Income"];
+const numbericFields = [
+  "Phone No.",
+  "Height",
+  "Weight",
+  "Annual CTC/Income",
+  "Plan Amount",
+];
 
 interface PersonalDetailsPhaseProps {
   formValues: Record<string, string>;
